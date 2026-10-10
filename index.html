@@ -29,6 +29,15 @@
 </aside>
 <main class="main">
   <header class="topbar"><div><div class="eyebrow" id="page-eyebrow">TU ESPACIO CREATIVO</div><h1 id="page-title">Tu próxima gran historia</h1><div class="subtitle" id="page-subtitle">Todas tus historias, en un solo lugar.</div></div><div class="top-actions"><button class="btn" id="import-text-btn">＋ Importar Word/texto</button><button class="btn" id="print-btn">⎙ Imprimir</button><button class="btn" id="publish-current-btn">↗ Publicar</button><button class="btn primary" id="new-book-btn">＋ Crear libro</button><input type="file" id="text-file" accept=".docx,.txt,.md,.text" hidden><input type="file" id="backup-file" accept=".json,application/json" hidden></div></header>
+  <section class="panel" id="iris-account-panel" style="margin-bottom:20px">
+    <div class="panel-head"><div><h2 class="section-title">☁️ Mi cuenta I.R.I.S.</h2><div class="muted tiny" style="margin-top:5px">Creá tu cuenta para guardar tus libros en la nube y acceder desde otros dispositivos.</div></div><span id="iris-cloud-status" class="tiny muted">Sin iniciar sesión</span></div>
+    <div id="iris-auth-form">
+      <div class="form-row"><div><label class="field-label" for="iris-auth-email">Correo electrónico</label><input class="field" id="iris-auth-email" type="email" autocomplete="email" placeholder="tu@correo.com"></div><div><label class="field-label" for="iris-auth-password">Contraseña</label><input class="field" id="iris-auth-password" type="password" autocomplete="current-password" minlength="6" placeholder="Mínimo 6 caracteres"></div></div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:14px"><button class="btn primary" id="iris-signup-btn" type="button">Crear cuenta</button><button class="btn" id="iris-login-btn" type="button">Iniciar sesión</button></div>
+      <p class="tiny muted" style="margin:12px 0 0">Tus libros actuales siguen guardados en este navegador. La sincronización con la nube se inicia por separado para evitar reemplazar contenido sin tu permiso.</p>
+    </div>
+    <div id="iris-auth-session" class="hidden"><p id="iris-account-email" style="margin:0 0 12px;font-weight:700"></p><div style="display:flex;gap:9px;flex-wrap:wrap"><button class="btn primary" id="iris-sync-btn" type="button">Sincronizar mis libros</button><button class="btn" id="iris-logout-btn" type="button">Cerrar sesión</button></div><p class="tiny muted" style="margin:12px 0 0">La sincronización combina los libros locales y los de tu cuenta; no elimina libros de la nube.</p></div>
+  </section>
   <section id="view-editor" class="view">
     <div class="layout"><div class="content">
       <section class="panel book-hero"><div><div class="eyebrow">LIBRO ACTUAL</div><input class="book-title" id="book-title" aria-label="Título del libro" value="Mi primer libro" maxlength="120"><label class="field-label" for="book-genre">Género</label><select class="field" id="book-genre"><option>Novela</option><option>Cuento</option><option>Fantasía</option><option>Ciencia ficción</option><option>Misterio</option><option>Romance</option><option>Ensayo</option><option>Memorias</option><option>Infantil</option><option>Poesía</option><option>Otro</option></select><label class="field-label" for="book-description">Descripción breve</label><textarea class="field book-desc" id="book-description" placeholder="¿De qué trata tu libro? (opcional)" rows="2"></textarea></div><div class="hero-stat"><div class="stat-number" id="book-words">0</div><div class="stat-caption">palabras escritas</div></div></section>
@@ -55,9 +64,10 @@
     </div>
     <div class="panel"><h2 class="section-title">Modelo de reparto de ingresos</h2><p class="muted tiny">Propuesta editable para conversar antes de lanzar una plataforma real. No representa pagos reales ni asesoramiento legal.</p><div class="form-row" style="margin-top:14px"><div><label class="field-label" for="owner-share">Porcentaje de la plataforma / creador</label><input class="field" id="owner-share" type="number" min="0" max="100" value="60"></div><div><label class="field-label" for="author-share">Porcentaje del autor</label><input class="field" id="author-share" type="number" min="0" max="100" value="40" readonly></div></div><p id="split-example" class="notice" style="margin-top:12px">Ejemplo: en una venta de $1.000, la plataforma recibiría $600 y el autor $400, antes de comisiones, impuestos, devoluciones y otros costos.</p><p class="tiny muted">El reparto debe informarse claramente a los autores y revisarse en los términos de uso. Para activar cobros reales se necesita definir contratos, impuestos, facturación, derechos de autor y pagos.</p></div>
   </section>
-  <footer style="text-align:center;color:#9298a0;font-size:11px;padding:10px">I.R.I.S. · Un espacio para tus historias <span style="color:var(--coral)">♥</span> · Tus textos quedan en este navegador.</footer>
+  <footer style="text-align:center;color:#9298a0;font-size:11px;padding:10px">I.R.I.S. · Un espacio para tus historias <span style="color:var(--coral)">♥</span> · Tus textos se guardan en este navegador; al iniciar sesión podés sincronizarlos con tu cuenta.</footer>
 </main></div><div id="toast" class="toast" role="status"></div>
 <script src="https://unpkg.com/mammoth@1.8.0/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (()=>{'use strict';
 const KEY='iris_escritorio_autor_v1';let data,activeBookId,activeChapterId,saveTimer,toastTimer;
@@ -95,8 +105,80 @@ function bindPublishing(){ $('print-btn').onclick=printBook;$('print-book-btn').
 $('owner-share').oninput=()=>{let v=Math.max(0,Math.min(100,Number($('owner-share').value)||0));$('owner-share').value=v;$('author-share').value=100-v;$('split-example').textContent=`Ejemplo: en una venta de $1.000, la plataforma recibiría $${(1000*v/100).toLocaleString('es-AR')} y el autor $${(1000*(100-v)/100).toLocaleString('es-AR')}, antes de comisiones, impuestos, devoluciones y otros costos.`};
 $('submission-form').addEventListener('submit',async e=>{e.preventDefault();const f=$('submit-file').files[0];if(!f)return;try{const content=await readDocxOrText(f);if(!content.trim())throw new Error('El archivo no contiene texto legible.');const item={title:$('submit-title').value.trim(),author:$('submit-author').value.trim(),description:$('submit-description').value.trim(),price:Number($('submit-price').value)||0,filename:f.name,content,created:Date.now()};const list=JSON.parse(localStorage.getItem(KEY+'_submissions')||'[]');list.unshift(item);localStorage.setItem(KEY+'_submissions',JSON.stringify(list));e.target.reset();$('submit-price').value='0';renderSubmissions();notify('Envío de prueba guardado en este navegador.');}catch(err){alert('No se pudo guardar el envío: '+(err.message||'revisá el archivo'));}});
 $('submission-list').addEventListener('click',e=>{const dl=e.target.closest('[data-submission-download]'),del=e.target.closest('[data-submission-delete]');let list=[];try{list=JSON.parse(localStorage.getItem(KEY+'_submissions')||'[]')}catch(err){}if(dl){const x=list[Number(dl.dataset.submissionDownload)];if(x){const fake={title:x.title,genre:'Obra de '+x.author,description:x.description,chapters:[{title:x.title,content:x.content}]};download(safeName(x.title)+'.html',makeBookHtml(fake),'text/html;charset=utf-8');}}if(del&&confirm('¿Eliminar este envío de prueba?')){list.splice(Number(del.dataset.submissionDelete),1);localStorage.setItem(KEY+'_submissions',JSON.stringify(list));renderSubmissions();}});renderSubmissions();}
+// Conexión de cuenta y sincronización segura con Supabase.
+const IRIS_SUPABASE_URL='https://htkhmnkrbwexsybwluce.supabase.co';
+const IRIS_SUPABASE_PUBLISHABLE_KEY='sb_publishable_f9vSMwqfABoJj7wn2SBuzA_8d4m0b1v';
+let irisSupabase=null, irisSession=null, irisCloudBusy=false;
+function irisSetCloudStatus(msg){const el=$('iris-cloud-status');if(el)el.textContent=msg;}
+function irisSetSession(session){irisSession=session||null;$('iris-auth-form').classList.toggle('hidden',!!irisSession);$('iris-auth-session').classList.toggle('hidden',!irisSession);$('iris-account-email').textContent=irisSession?.user?.email||'';irisSetCloudStatus(irisSession?'Cuenta conectada':'Sin iniciar sesión');}
+async function irisAuthAction(mode){
+  if(!irisSupabase){alert('No se pudo cargar el servicio de cuentas. Revisá tu conexión y recargá la página.');return;}
+  const email=$('iris-auth-email').value.trim(),password=$('iris-auth-password').value;
+  if(!email||!password){alert('Ingresá tu correo y contraseña.');return;}
+  if(password.length<6){alert('La contraseña debe tener al menos 6 caracteres.');return;}
+  const btn=$(mode==='signup'?'iris-signup-btn':'iris-login-btn');btn.disabled=true;const old=btn.textContent;btn.textContent='Procesando…';
+  try{
+    const result=mode==='signup'?await irisSupabase.auth.signUp({email,password}):await irisSupabase.auth.signInWithPassword({email,password});
+    if(result.error)throw result.error;
+    if(mode==='signup'&&!result.data.session){notify('Cuenta creada. Revisá tu correo para confirmar el registro.');irisSetCloudStatus('Falta confirmar el correo');}
+    else{irisSetSession(result.data.session);notify(mode==='signup'?'Cuenta creada':'Sesión iniciada');}
+  }catch(e){alert('No se pudo '+(mode==='signup'?'crear la cuenta':'iniciar sesión')+': '+(e.message||'intentá nuevamente.'));}
+  finally{btn.disabled=false;btn.textContent=old;}
+}
+function irisBookToRow(book,userId){return {author_id:userId,local_id:String(book.id),title:book.title||'Libro sin título',genre:book.genre||'Novela',description:book.description||'',status:'draft',metadata:{globalNotes:book.globalNotes||'',characters:Array.isArray(book.characters)?book.characters:[],created:book.created||Date.now()}};}
+function irisChapterToRow(chapter,bookId,userId,position){return {book_id:bookId,author_id:userId,local_id:String(chapter.id),title:chapter.title||'Capítulo '+(position+1),content:chapter.content||'',position,metadata:{notes:chapter.notes||''}};}
+async function irisSync(){
+  if(!irisSupabase||!irisSession){alert('Primero iniciá sesión en tu cuenta I.R.I.S.');return;}
+  if(irisCloudBusy)return;
+  if(!confirm('I.R.I.S. combinará tus libros de este navegador con los de tu cuenta. Los libros con el mismo identificador se actualizarán con la versión de este navegador. ¿Continuar?'))return;
+  irisCloudBusy=true;const btn=$('iris-sync-btn');btn.disabled=true;btn.textContent='Sincronizando…';irisSetCloudStatus('Sincronizando…');
+  try{
+    const uid=irisSession.user.id;
+    const {data:remoteBooks,error:booksErr}=await irisSupabase.from('iris_books').select('*').eq('author_id',uid);if(booksErr)throw booksErr;
+    const {data:remoteChapters,error:chaptersErr}=await irisSupabase.from('iris_chapters').select('*').eq('author_id',uid);if(chaptersErr)throw chaptersErr;
+    const remoteBookByLocal=new Map((remoteBooks||[]).map(b=>[String(b.local_id||''),b]));
+    // Primero conservar en memoria los libros remotos que todavía no existen localmente.
+    for(const rb of (remoteBooks||[])){
+      const localId=String(rb.local_id||'');
+      if(!localId||data.books.some(b=>String(b.id)===localId))continue;
+      const chapters=(remoteChapters||[]).filter(c=>c.book_id===rb.id).sort((a,b)=>(a.position||0)-(b.position||0)).map(c=>({id:String(c.local_id||uid()),title:c.title||'Capítulo',content:c.content||'',notes:c.metadata?.notes||''}));
+      data.books.push({id:localId,title:rb.title||'Libro sin título',genre:rb.genre||'Novela',description:rb.description||'',globalNotes:rb.metadata?.globalNotes||'',characters:Array.isArray(rb.metadata?.characters)?rb.metadata.characters:[],chapters:chapters.length?chapters:[newChapter(1)],created:rb.metadata?.created||Date.now()});
+    }
+    // Para libros que ya existen en ambos lados, incorporar capítulos remotos que solo estén en la nube.
+    for(const b of data.books){
+      const rb=remoteBookByLocal.get(String(b.id));if(!rb)continue;
+      const cloudChapters=(remoteChapters||[]).filter(c=>c.book_id===rb.id);
+      const localChapterIds=new Set((b.chapters||[]).map(c=>String(c.id)));
+      for(const rc of cloudChapters){
+        const cid=String(rc.local_id||'');
+        if(cid&&!localChapterIds.has(cid))b.chapters.push({id:cid,title:rc.title||'Capítulo',content:rc.content||'',notes:rc.metadata?.notes||''});
+      }
+      if(!b.globalNotes&&rb.metadata?.globalNotes)b.globalNotes=rb.metadata.globalNotes;
+      if((!Array.isArray(b.characters)||!b.characters.length)&&Array.isArray(rb.metadata?.characters))b.characters=rb.metadata.characters;
+    }
+    // Subir todos los libros locales y conservar sus metadatos y capítulos.
+    for(const b of data.books){
+      const payload=irisBookToRow(b,uid);const {data:upBook,error:upBookErr}=await irisSupabase.from('iris_books').upsert(payload,{onConflict:'author_id,local_id'}).select('id,local_id').single();if(upBookErr)throw upBookErr;
+      const chapterRows=b.chapters.map((c,i)=>irisChapterToRow(c,upBook.id,uid,i));
+      if(chapterRows.length){const {error:upChErr}=await irisSupabase.from('iris_chapters').upsert(chapterRows,{onConflict:'author_id,local_id'});if(upChErr)throw upChErr;}
+    }
+    save();renderAll();irisSetCloudStatus('Sincronización completada');notify('Libros sincronizados con tu cuenta.');
+  }catch(e){console.error('I.R.I.S. sync error',e);irisSetCloudStatus('No se pudo sincronizar');alert('No se pudo completar la sincronización. Puede faltar actualizar la estructura de Supabase. Detalle: '+(e.message||'error desconocido'));}
+  finally{irisCloudBusy=false;btn.disabled=false;btn.textContent='Sincronizar mis libros';}
+}
+function irisInitCloud(){
+  if(!window.supabase?.createClient){irisSetCloudStatus('Servicio no disponible');return;}
+  irisSupabase=window.supabase.createClient(IRIS_SUPABASE_URL,IRIS_SUPABASE_PUBLISHABLE_KEY);
+  $('iris-signup-btn').addEventListener('click',()=>irisAuthAction('signup'));
+  $('iris-login-btn').addEventListener('click',()=>irisAuthAction('login'));
+  $('iris-sync-btn').addEventListener('click',irisSync);
+  $('iris-logout-btn').addEventListener('click',async()=>{const {error}=await irisSupabase.auth.signOut();if(error){alert('No se pudo cerrar sesión: '+error.message);return;}irisSetSession(null);notify('Sesión cerrada');});
+  irisSupabase.auth.getSession().then(({data,error})=>{if(error){irisSetCloudStatus('No se pudo comprobar la sesión');return;}irisSetSession(data.session);});
+  irisSupabase.auth.onAuthStateChange((_event,session)=>irisSetSession(session));
+}
 bindPublishing();
 init();
+irisInitCloud();
 })();
 </script>
 </body></html>
