@@ -146,10 +146,6 @@ button{cursor:pointer}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--navy);color:white;padding:12px 18px;border-radius:11px;box-shadow:0 12px 30px rgba(0,0,0,.3);z-index:10;opacity:0;pointer-events:none;transition:.2s}
 .toast.show{opacity:1}
 
-@media(max-width:1050px){.layout{grid-template-columns:minmax(0,1fr) 230px}.app{grid-template-columns:215px minmax(0,1fr)}}
-@media(max-width:780px){.app{display:block}.sidebar{min-height:auto;padding:13px 14px;gap:14px}.main{padding:20px 13px 32px}.layout{grid-template-columns:1fr}}
-
-/* Estilos de impresión para PDF limpios */
 @media print {
   body { background: white !important; color: black !important; }
   .sidebar, .topbar, .editor-top, .editor-footer, .rightcol, .top-actions, .nav { display: none !important; }
@@ -181,8 +177,8 @@ button{cursor:pointer}
     </div>
     <div class="sidebar-bottom">
       <div class="tip">
-        <strong>💡 Exportar Libro</strong>
-        <p>Usa los botones superiores para descargar tu novela en Word (.docx) o PDF.</p>
+        <strong>💡 Buscador Global</strong>
+        <p>Usa el botón "🔍 Reemplazar" en el editor para cambiar palabras en toda la obra.</p>
       </div>
     </div>
   </aside>
@@ -222,6 +218,7 @@ button{cursor:pointer}
             <div class="editor-top">
               <div class="crumb">Editando: <strong id="current-chapter-crumb">Capítulo 1</strong></div>
               <div class="toolbar">
+                <button class="btn small" onclick="openFindReplace()">🔍 Reemplazar</button>
                 <button class="btn small" onclick="toggleFocusMode()">👁️ Enfoque</button>
                 <button class="btn small primary" onclick="addChapter()">+ Nuevo Capítulo</button>
               </div>
@@ -467,91 +464,4 @@ function saveCurrentChapter() {
   document.getElementById('chapter-words').innerText = countWords(chap.content);
   updateWordCounts();
   saveData();
-  renderChapters();
-}
-
-function addChapter() {
-  const newId = "chap-" + Date.now();
-  appData.chapters.push({ id: newId, title: `Capítulo ${appData.chapters.length + 1}`, content: "" });
-  activeChapterId = newId;
-  saveData();
-  renderAll();
-}
-
-function deleteChapter(id) {
-  if (appData.chapters.length <= 1) {
-    alert("Debes conservar al menos un capítulo.");
-    return;
-  }
-  if (confirm("¿Eliminar este capítulo?")) {
-    appData.chapters = appData.chapters.filter(c => c.id !== id);
-    activeChapterId = appData.chapters[0].id;
-    saveData();
-    renderAll();
-  }
-}
-
-function updateBookInfo() {
-  appData.title = document.getElementById('book-title-input').value;
-  appData.description = document.getElementById('book-desc-input').value;
-  document.getElementById('top-book-title').innerText = appData.title || "Sin título";
-  saveData();
-}
-
-function saveNotes() {
-  appData.notes = document.getElementById('quick-notes').value;
-  saveData();
-}
-
-function updateGoal() {
-  appData.dailyGoal = parseInt(document.getElementById('daily-goal-input').value) || 500;
-  document.getElementById('goal-text').innerText = appData.dailyGoal;
-  updateWordCounts();
-  saveData();
-}
-
-function countWords(str) {
-  if (!str) return 0;
-  return str.trim().split(/\s+/).filter(w => w.length > 0).length;
-}
-
-function updateWordCounts() {
-  let total = 0;
-  appData.chapters.forEach(c => total += countWords(c.content));
-  document.getElementById('total-words').innerText = total;
-  document.getElementById('top-book-sub').innerText = `${appData.chapters.length} Capítulos | ${total} Palabras totales`;
-
-  const goal = appData.dailyGoal || 500;
-  const pct = Math.min(100, Math.round((total / goal) * 100));
-  document.getElementById('goal-progress-bar').style.width = pct + '%';
-}
-
-function startTimer() {
-  if (timerInterval) return;
-  timerInterval = setInterval(() => {
-    timeLeft--;
-    let m = Math.floor(timeLeft / 60);
-    let s = timeLeft % 60;
-    document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      alert("¡Tiempo de descanso!");
-    }
-  }, 1000);
-}
-
-function resetTimer() {
-  clearInterval(timerInterval);
-  timerInterval = null;
-  timeLeft = 1500;
-  document.getElementById('timer-display').innerText = "25:00";
-}
-
-function renderScenes() {
-  const list = document.getElementById('scene-list');
-  list.innerHTML = "";
-  if (!appData.scenes || appData.scenes.length === 0) {
-    list.innerHTML = `<div class="empty"><span class="big">📍</span><p>No hay escenas registradas.</p></div>`;
-    document.getElementById('stat-scenes-count').innerText = 0;
-    document.getElementById('stat-done-scenes').
+  render
