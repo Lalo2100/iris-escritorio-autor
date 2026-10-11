@@ -3,640 +3,95 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>I.R.I.S. — Escritorio de Autor Avanzado</title>
+<title>I.R.I.S. — Escritorio de Autor PRO</title>
 <style>
-:root{--navy:#17263f;--navy2:#223752;--paper:#f7f3eb;--white:#fffefa;--teal:#278c83;--teal-dark:#1d7069;--coral:#d98270;--gold:#c5a15d;--ink:#253247;--muted:#788293;--line:#e7e2d8;--pale:#e8f3f0;--shadow:0 12px 35px rgba(27,42,63,.07)}
+:root {
+  --navy: #17263f;
+  --navy2: #223752;
+  --paper: #f7f3eb;
+  --white: #fffefa;
+  --teal: #278c83;
+  --teal-dark: #1d7069;
+  --coral: #d98270;
+  --gold: #c5a15d;
+  --ink: #253247;
+  --muted: #788293;
+  --line: #e7e2d8;
+  --pale: #e8f3f0;
+  --shadow: 0 12px 35px rgba(27,42,63,.07);
+  --card-bg: #fffefa;
+}
+
+body.dark-theme {
+  --navy: #0d1726;
+  --navy2: #152238;
+  --paper: #121926;
+  --white: #1a2332;
+  --teal: #33a397;
+  --teal-dark: #247c73;
+  --coral: #e09383;
+  --gold: #d4b270;
+  --ink: #e6edf5;
+  --muted: #8e9bb0;
+  --line: #2a364a;
+  --pale: #1c2b3d;
+  --shadow: 0 12px 35px rgba(0,0,0,.4);
+  --card-bg: #1a2332;
+}
+
 *{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,"Segoe UI",Arial,sans-serif;font-size:14px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,"Segoe UI",Arial,sans-serif;font-size:14px;transition:background .3s, color .3s}
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
-.app{min-height:100vh;display:grid;grid-template-columns:245px minmax(0,1fr);transition:.3s}
+
+.app{min-height:100vh;display:grid;grid-template-columns:255px minmax(0,1fr);transition:.3s}
 .app.focus-mode{grid-template-columns:0 minmax(0,1fr)}
 .app.focus-mode .sidebar{display:none}
+
 .sidebar{background:var(--navy);color:#f8f7f1;padding:25px 17px;display:flex;flex-direction:column;gap:28px;min-height:100vh}
 .brand{display:flex;align-items:center;gap:12px;padding:0 8px}
-.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(145deg,#3ba89d,#226b70);display:grid;place-items:center;color:white;font-family:Georgia,serif;font-size:24px;box-shadow:0 5px 15px #0d182b55}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(145deg,#3ba89d,#226b70);display:grid;place-items:center;color:white;font-family:Georgia,serif;font-size:24px;box-shadow:0 5px 15px #0d182b55}
 .brandname{font-family:Georgia,serif;font-size:21px;letter-spacing:1.5px}
 .brandtag{font-size:10px;color:#c5d0dc;letter-spacing:.7px;margin-top:3px}
+
 .nav-label{color:#91a1b6;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;padding:0 13px;margin-bottom:8px}
 .nav{display:grid;gap:6px}
 .nav button{display:flex;align-items:center;gap:12px;width:100%;border:0;background:transparent;color:#d9e0e9;padding:12px 13px;border-radius:12px;text-align:left;transition:.18s}
 .nav button:hover{background:#ffffff0d}
 .nav button.active{background:#ffffff17;color:#fff;box-shadow:inset 3px 0 var(--coral)}
 .nav .ico{width:21px;text-align:center;font-size:17px}
+
 .sidebar-bottom{margin-top:auto}
 .tip{background:#ffffff0d;border:1px solid #ffffff12;border-radius:16px;padding:15px;color:#dce4ec;line-height:1.5}
 .tip strong{display:block;color:#fff;margin:7px 0 4px}
 .tip p{font-size:12px;color:#b9c6d5;margin:0}
+
 .main{min-width:0;padding:30px clamp(18px,3vw,42px) 45px}
 .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:28px}
 .eyebrow{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--teal);font-weight:800}
-.topbar h1{font-size:clamp(25px,3vw,34px);font-weight:650;letter-spacing:-1px;margin:7px 0 5px;color:var(--navy)}
+.topbar h1{font-size:clamp(25px,3vw,34px);font-weight:650;letter-spacing:-1px;margin:7px 0 5px;color:var(--ink)}
 .subtitle{color:var(--muted);font-size:14px}
 .top-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
-.btn{border:1px solid var(--line);background:var(--white);color:var(--ink);padding:10px 14px;border-radius:10px;font-weight:650;transition:.15s}
-.btn:hover{transform:translateY(-1px);box-shadow:0 5px 12px #17263f12}
+
+.btn{border:1px solid var(--line);background:var(--card-bg);color:var(--ink);padding:10px 14px;border-radius:10px;font-weight:650;transition:.15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 5px 12px rgba(0,0,0,.1)}
 .btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
 .btn.primary:hover{background:var(--teal-dark)}
 .btn.dark{background:var(--navy);border-color:var(--navy);color:white}
 .btn.small{padding:7px 10px;font-size:12px}
 .btn.danger{background:#e53e3e;border-color:#e53e3e;color:white}
+
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:22px;align-items:start}
 .content{min-width:0}
-.panel{background:var(--white);border:1px solid #ece7dd;border-radius:18px;box-shadow:var(--shadow);padding:22px;margin-bottom:20px}
+.panel{background:var(--card-bg);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:22px;margin-bottom:20px}
 .panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}
-.panel h2{font-size:16px;margin:0;color:var(--navy)}
-.panel h3{margin:0;color:var(--navy)}
+.panel h2{font-size:16px;margin:0;color:var(--ink)}
+.panel h3{margin:0;color:var(--ink)}
 .muted{color:var(--muted)}
 .tiny{font-size:12px}
-.book-hero{position:relative;overflow:hidden;background:linear-gradient(120deg,#fffefa 0%,#f1f6f1 100%);display:grid;grid-template-columns:minmax(0,1fr) 145px;gap:20px;align-items:center}
-.book-title{width:100%;border:0;background:transparent;font-family:Georgia,serif;font-size:clamp(23px,3vw,31px);color:var(--navy);outline:none;padding:2px 0}
+
+.book-hero{position:relative;overflow:hidden;background:var(--pale);display:grid;grid-template-columns:minmax(0,1fr) 145px;gap:20px;align-items:center}
+.book-title{width:100%;border:0;background:transparent;font-family:Georgia,serif;font-size:clamp(23px,3vw,31px);color:var(--ink);outline:none;padding:2px 0}
 .book-title:focus{border-bottom:1px solid var(--teal)}
 .field-label{font-size:11px;color:var(--muted);font-weight:750;display:block;margin:13px 0 6px}
-.field{width:100%;border:1px solid var(--line);background:#fffefa;border-radius:9px;padding:10px 11px;color:var(--ink);outline:none}
-.field:focus,textarea:focus{border-color:#72b7b0;box-shadow:0 0 0 3px #278c8312}
-.book-desc{resize:vertical;min-height:52px;max-height:140px;line-height:1.5}
-.hero-stat{z-index:1;text-align:center;background:#fffefa;border:1px solid #e8eee8;border-radius:16px;padding:18px 12px}
-.stat-number{font-size:30px;font-weight:750;color:var(--teal);letter-spacing:-1px}
-.stat-caption{font-size:11px;color:var(--muted);margin-top:4px}
-.chapter-list{display:grid;gap:8px}
-.chapter-row{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fffefa;transition:.15s}
-.chapter-row.selected{border-color:#73b9b1;background:#f0f8f5;box-shadow:0 0 0 2px #278c830b}
-.chapter-pick{display:flex;align-items:center;gap:11px;min-width:0;flex:1;background:transparent;border:0;text-align:left;color:var(--ink)}
-.chapter-number{flex:0 0 34px;height:38px;border-radius:10px;display:grid;place-items:center;background:#f1eee7;color:#667386;font-weight:750}
-.selected .chapter-number{background:var(--teal);color:white}
-.chapter-text{min-width:0}
-.chapter-name{display:block;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chapter-meta{display:block;font-size:11px;color:var(--muted);margin-top:4px}
-.icon-btn{border:0;background:transparent;color:#8a93a0;border-radius:8px;padding:7px}
-.icon-btn:hover{background:#f3eee5;color:var(--navy)}
-.editor-panel{padding:0;overflow:hidden}
-.editor-top{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.crumb{font-size:12px;color:var(--muted)}
-.crumb strong{color:var(--navy)}
-.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.editor-body{padding:clamp(20px,4vw,44px);min-height:420px}
-.chapter-title-input{display:block;width:100%;border:0;background:transparent;font-family:Georgia,"Times New Roman",serif;font-size:clamp(26px,3vw,34px);font-weight:600;color:var(--navy);outline:none;margin-bottom:22px}
-.writing-area{display:block;width:100%;min-height:315px;border:0;outline:none;resize:vertical;background:transparent;color:#354154;font-family:Georgia,"Times New Roman",serif;font-size:17px;line-height:1.9}
-.writing-area::placeholder{color:#b3b5b4}
-.editor-footer{padding:13px 22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:11px;background:#fffdf8}
-.status-dot{display:inline-block;width:7px;height:7px;background:#54a58b;border-radius:50%;margin-right:6px}
-.rightcol .panel{padding:19px}
-.side-heading{display:flex;align-items:center;gap:9px;margin-bottom:15px}
-.side-icon{width:32px;height:32px;display:grid;place-items:center;background:var(--pale);border-radius:10px;font-size:16px}
-.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.metric{background:#f8f6f0;border-radius:12px;padding:13px}
-.metric strong{display:block;color:var(--navy);font-size:20px}
-.metric span{font-size:11px;color:var(--muted)}
-.note-area{width:100%;min-height:145px;resize:vertical;border:1px solid #f0dfb5;border-radius:10px;background:#fff8e8;padding:12px;color:#66573c;line-height:1.6;outline:none}
-.note-area:focus{border-color:var(--gold)}
-.character-list{display:grid;gap:12px}
-.character{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fffefa}
-.character strong{display:block;color:var(--navy);margin-bottom:4px;font-size:15px}
-.character p{font-size:13px;color:var(--ink);line-height:1.5;margin:0;white-space:pre-wrap}
-.empty{padding:25px 15px;text-align:center;color:var(--muted);background:#faf8f3;border:1px dashed #ddd6c8;border-radius:12px;line-height:1.6}
-.empty .big{font-size:26px;display:block;margin-bottom:8px}
-.hidden{display:none!important}
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--navy);color:white;padding:12px 18px;border-radius:11px;box-shadow:0 12px 30px #17263f30;z-index:10;opacity:0;pointer-events:none;transition:.2s}
-.toast.show{opacity:1}
-.file-label{display:inline-flex;align-items:center;gap:6px}
-
-/* Organizador de escenas */
-.scene-card{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--white);margin-bottom:12px;box-shadow:0 3px 10px rgba(0,0,0,0.02)}
-.scene-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
-.scene-title{font-weight:700;color:var(--navy);font-size:15px}
-.scene-badge{font-size:11px;padding:3px 8px;border-radius:20px;font-weight:600;text-transform:uppercase}
-.badge-idea{background:#e2f0fd;color:#2b6cb0}
-.badge-planificada{background:#fefcbf;color:#744210}
-.badge-borrador{background:#feebc8;color:#9c4221}
-.badge-revisar{background:#fed7d7;color:#9b2c2c}
-.badge-terminada{background:#c6f6d5;color:#22543d}
-.scene-meta{display:flex;gap:12px;font-size:12px;color:var(--muted);margin-bottom:10px;flex-wrap:wrap}
-.scene-body{font-size:13px;line-height:1.5;color:var(--ink);margin-bottom:12px}
-.scene-actions{display:flex;gap:6px;justify-content:flex-end}
-
-/* Progreso y Metas */
-.goal-bar-container{background:#e8eee8;border-radius:8px;height:8px;width:100%;overflow:hidden;margin-top:8px}
-.goal-bar{background:var(--teal);height:100%;width:0%;transition:.3s}
-
-@media(max-width:1050px){.layout{grid-template-columns:minmax(0,1fr) 230px}.app{grid-template-columns:215px minmax(0,1fr)}.sidebar{padding:22px 13px}.main{padding:25px 20px}}
-@media(max-width:780px){.app{display:block}.sidebar{min-height:auto;padding:13px 14px;gap:14px}.main{padding:20px 13px 32px}.layout{grid-template-columns:1fr}.rightcol{display:grid;grid-template-columns:1fr 1fr;gap:12px}}
-</style>
-</head>
-<body>
-<div class="app" id="app-container">
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="logo">I</div>
-      <div>
-        <div class="brandname">I.R.I.S.</div>
-        <div class="brandtag">ESCRITORIO DE AUTOR PRO</div>
-      </div>
-    </div>
-    <div>
-      <div class="nav-label">Navegación</div>
-      <nav class="nav">
-        <button id="nav-editor" class="active" onclick="switchTab('editor')"><span class="ico">✍️</span> Editor y Capítulos</button>
-        <button id="nav-organizer" onclick="switchTab('organizer')"><span class="ico">📍</span> Organizador Narrativo</button>
-        <button id="nav-characters" onclick="switchTab('characters')"><span class="ico">👤</span> Personajes y Ficha</button>
-        <button id="nav-export" onclick="switchTab('export')"><span class="ico">💾</span> Guardar y Exportar</button>
-      </nav>
-    </div>
-    <div class="sidebar-bottom">
-      <div class="tip">
-        <strong>💡 Modo Enfoque</strong>
-        <p>Usa el botón superior en el editor para ocultar los paneles y escribir sin distracciones.</p>
-      </div>
-    </div>
-  </aside>
-
-  <main class="main">
-    <div class="topbar">
-      <div>
-        <div class="eyebrow">Proyecto Activo</div>
-        <h1 id="top-book-title">Proyecto I.R.I.S.</h1>
-        <div class="subtitle" id="top-book-sub">Cargando datos...</div>
-      </div>
-      <div class="top-actions">
-        <button class="btn primary" onclick="exportData()"><span class="file-label">💾 Respaldar Proyecto</span></button>
-      </div>
-    </div>
-
-    <!-- SECCIÓN 1: EDITOR Y CAPÍTULOS -->
-    <div id="tab-editor" class="tab-content">
-      <div class="layout">
-        <div class="content">
-          <div class="panel book-hero">
-            <div>
-              <input type="text" id="book-title-input" class="book-title" placeholder="Título de la obra" oninput="updateBookInfo()">
-              <label class="field-label">SINOPSIS / RESUMEN GENERAL</label>
-              <textarea id="book-desc-input" class="field book-desc" placeholder="Escribe la sinopsis o propuesta central de tu libro..." oninput="updateBookInfo()"></textarea>
-            </div>
-            <div class="hero-stat">
-              <div class="stat-number" id="total-words">0</div>
-              <div class="stat-caption">Palabras Totales</div>
-            </div>
-          </div>
-
-          <div class="panel editor-panel">
-            <div class="editor-top">
-              <div class="crumb">Editando: <strong id="current-chapter-crumb">Capítulo 1</strong></div>
-              <div class="toolbar">
-                <button class="btn small" onclick="toggleFocusMode()">👁️ Enfoque</button>
-                <button class="btn small primary" onclick="addChapter()">+ Nuevo Capítulo</button>
-              </div>
-            </div>
-            <div class="editor-body">
-              <input type="text" id="chapter-title-input" class="chapter-title-input" placeholder="Título del capítulo..." oninput="saveCurrentChapter()">
-              <textarea id="writing-area" class="writing-area" placeholder="Escribe aquí tu manuscrito..." oninput="saveCurrentChapter()"></textarea>
-            </div>
-            <div class="editor-footer">
-              <div><span class="status-dot"></span><span id="save-status">Guardado automático activo</span></div>
-              <div>Palabras en este capítulo: <strong id="chapter-words">0</strong></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="rightcol" id="right-sidebar-panels">
-          <!-- PANEL DE META DIARIA -->
-          <div class="panel">
-            <div class="side-heading">
-              <div class="side-icon">🎯</div>
-              <h3>Meta Diaria</h3>
-            </div>
-            <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Objetivo: <span id="goal-text">500</span> palabras</div>
-            <input type="number" id="daily-goal-input" class="field" value="500" style="padding:6px 8px;font-size:12px" onchange="updateGoal()">
-            <div class="goal-bar-container">
-              <div class="goal-bar" id="goal-progress-bar"></div>
-            </div>
-          </div>
-
-          <!-- PANEL DE CRONÓMETRO -->
-          <div class="panel">
-            <div class="side-heading">
-              <div class="side-icon">⏱️</div>
-              <h3>Pomodoro de Autor</h3>
-            </div>
-            <div id="timer-display" style="font-size:24px;font-weight:700;color:var(--navy);text-align:center;margin-bottom:10px">25:00</div>
-            <div style="display:flex;gap:6px;justify-content:center">
-              <button class="btn small primary" onclick="startTimer()">Iniciar</button>
-              <button class="btn small" onclick="resetTimer()">Reiniciar</button>
-            </div>
-          </div>
-
-          <div class="panel">
-            <div class="side-heading">
-              <div class="side-icon">📖</div>
-              <h3>Capítulos</h3>
-            </div>
-            <div class="chapter-list" id="chapter-list"></div>
-          </div>
-
-          <div class="panel">
-            <div class="side-heading">
-              <div class="side-icon">📌</div>
-              <h3>Notas Rápidas</h3>
-            </div>
-            <textarea id="quick-notes" class="note-area" placeholder="Anota ideas o pendientes..." oninput="saveNotes()"></textarea>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SECCIÓN 2: ORGANIZADOR NARRATIVO -->
-    <div id="tab-organizer" class="tab-content hidden">
-      <div class="layout">
-        <div class="content">
-          <div class="panel">
-            <div class="panel-head">
-              <h2>📍 Organizador de Escenas y Tramas</h2>
-              <button class="btn primary small" onclick="openSceneModal()">+ Nueva Escena</button>
-            </div>
-            <p class="muted tiny">Planifica el flujo narrativo y la continuidad de los eventos.</p>
-            <div id="scene-list"></div>
-          </div>
-        </div>
-        <div class="rightcol">
-          <div class="panel">
-            <div class="side-heading">
-              <div class="side-icon">📊</div>
-              <h3>Resumen de Escenas</h3>
-            </div>
-            <div class="metric-grid">
-              <div class="metric"><strong id="stat-scenes-count">0</strong><span>Escenas</span></div>
-              <div class="metric"><strong id="stat-done-scenes">0</strong><span>Terminadas</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SECCIÓN 3: PERSONAJES -->
-    <div id="tab-characters" class="tab-content hidden">
-      <div class="panel">
-        <div class="panel-head">
-          <h2>👤 Ficha de Personajes y Escenarios</h2>
-          <button class="btn primary small" onclick="addCharacter()">+ Agregar Personaje</button>
-        </div>
-        <div class="character-list" id="character-list"></div>
-      </div>
-    </div>
-
-    <!-- SECCIÓN 4: GUARDAR Y EXPORTAR -->
-    <div id="tab-export" class="tab-content hidden">
-      <div class="panel">
-        <h2>💾 Copias de Seguridad</h2>
-        <p class="muted">Descarga o carga respaldos en formato JSON.</p>
-        <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap">
-          <button class="btn primary" onclick="exportData()">Descargar Copia JSON</button>
-          <label class="btn dark" style="cursor:pointer">
-            Cargar Copia JSON <input type="file" id="import-file" style="display:none" onchange="importData(event)">
-          </label>
-        </div>
-      </div>
-    </div>
-  </main>
-</div>
-
-<div id="toast" class="toast">Mensaje de notificación</div>
-
-<script>
-const DEFAULT_DATA = {
-  title: "Proyecto I.R.I.S.",
-  description: "Investigación y desarrollo del proyecto I.R.I.S.",
-  notes: "Mantener la coherencia en las escenas del campus.",
-  dailyGoal: 500,
-  chapters: [
-    { id: "chap-1", title: "Capítulo 1: Presentación del Proyecto", content: "Gabriel Santoro acomodó sus anteojos mientras miraba las notas..." }
-  ],
-  characters: [
-    { name: "Gabriel Santoro", desc: "Protagonista principal. Profesor universitario de Historia de 40 años, metódico y observador. En I.R.I.S. viste calzas cortas negras, cabello largo de lado y porta guitarra." },
-    { name: "Caterina", desc: "Hija de Gabriel y su mayor tesoro. Amante de los libros." },
-    { name: "Laura Méndez", desc: "Trabajadora de coordinación de investigación de la universidad." },
-    { name: "Elena Valdés", desc: "Especialista en decisiones colectivas y comunicación institucional." }
-  ],
-  scenes: [
-    { title: "Encuentro en la Universidad", summary: "Laura convoca a Gabriel para presentarle los avances.", location: "Universidad", characters: "Gabriel, Laura", status: "borrador", chapterId: "chap-1", continuity: "Lleva su carpeta de notas históricas." }
-  ]
-};
-
-let appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
-let activeChapterId = "chap-1";
-let timerInterval = null;
-let timeLeft = 1500; // 25 minutos
-
-window.addEventListener('DOMContentLoaded', () => {
-  loadStoredData();
-  renderAll();
-});
-
-function loadStoredData() {
-  const saved = localStorage.getItem('IRIS_AUTHOR_DATA_PRO');
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      appData = { ...appData, ...parsed };
-      if (!appData.chapters || appData.chapters.length === 0) appData.chapters = DEFAULT_DATA.chapters;
-      activeChapterId = appData.chapters[0].id;
-    } catch(e) { console.error(e); }
-  }
-}
-
-function saveData() {
-  localStorage.setItem('IRIS_AUTHOR_DATA_PRO', JSON.stringify(appData));
-  showToast("Cambios guardados");
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.innerText = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
-}
-
-function switchTab(tab) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-  document.querySelectorAll('.nav button').forEach(el => el.classList.remove('active'));
-  document.getElementById(`tab-${tab}`).classList.remove('hidden');
-  document.getElementById(`nav-${tab}`).classList.add('active');
-}
-
-function toggleFocusMode() {
-  document.getElementById('app-container').classList.toggle('focus-mode');
-}
-
-function renderAll() {
-  document.getElementById('book-title-input').value = appData.title || "";
-  document.getElementById('book-desc-input').value = appData.description || "";
-  document.getElementById('quick-notes').value = appData.notes || "";
-  document.getElementById('daily-goal-input').value = appData.dailyGoal || 500;
-  document.getElementById('goal-text').innerText = appData.dailyGoal || 500;
-  document.getElementById('top-book-title').innerText = appData.title || "Sin título";
-
-  renderChapters();
-  renderActiveChapter();
-  renderScenes();
-  renderCharacters();
-  updateWordCounts();
-}
-
-function renderChapters() {
-  const list = document.getElementById('chapter-list');
-  list.innerHTML = "";
-  appData.chapters.forEach((chap, idx) => {
-    const isSelected = chap.id === activeChapterId;
-    const row = document.createElement('div');
-    row.className = `chapter-row ${isSelected ? 'selected' : ''}`;
-    row.innerHTML = `
-      <button class="chapter-pick" onclick="selectChapter('${chap.id}')">
-        <div class="chapter-number">${idx + 1}</div>
-        <div class="chapter-text">
-          <span class="chapter-name">${chap.title || 'Sin título'}</span>
-          <span class="chapter-meta">${countWords(chap.content)} palabras</span>
-        </div>
-      </button>
-      <button class="icon-btn" onclick="deleteChapter('${chap.id}')" title="Eliminar">🗑️</button>
-    `;
-    list.appendChild(row);
-  });
-}
-
-function selectChapter(id) {
-  activeChapterId = id;
-  renderChapters();
-  renderActiveChapter();
-}
-
-function renderActiveChapter() {
-  const chap = appData.chapters.find(c => c.id === activeChapterId);
-  if (!chap) return;
-  document.getElementById('current-chapter-crumb').innerText = chap.title;
-  document.getElementById('chapter-title-input').value = chap.title;
-  document.getElementById('writing-area').value = chap.content;
-  document.getElementById('chapter-words').innerText = countWords(chap.content);
-}
-
-function saveCurrentChapter() {
-  const chap = appData.chapters.find(c => c.id === activeChapterId);
-  if (!chap) return;
-  chap.title = document.getElementById('chapter-title-input').value;
-  chap.content = document.getElementById('writing-area').value;
-  document.getElementById('chapter-words').innerText = countWords(chap.content);
-  updateWordCounts();
-  saveData();
-  renderChapters();
-}
-
-function addChapter() {
-  const newId = "chap-" + Date.now();
-  appData.chapters.push({ id: newId, title: `Capítulo ${appData.chapters.length + 1}`, content: "" });
-  activeChapterId = newId;
-  saveData();
-  renderAll();
-}
-
-function deleteChapter(id) {
-  if (appData.chapters.length <= 1) {
-    alert("Debes conservar al menos un capítulo.");
-    return;
-  }
-  if (confirm("¿Estás seguro de eliminar este capítulo?")) {
-    appData.chapters = appData.chapters.filter(c => c.id !== id);
-    activeChapterId = appData.chapters[0].id;
-    saveData();
-    renderAll();
-  }
-}
-
-function updateBookInfo() {
-  appData.title = document.getElementById('book-title-input').value;
-  appData.description = document.getElementById('book-desc-input').value;
-  document.getElementById('top-book-title').innerText = appData.title || "Sin título";
-  saveData();
-}
-
-function saveNotes() {
-  appData.notes = document.getElementById('quick-notes').value;
-  saveData();
-}
-
-function updateGoal() {
-  appData.dailyGoal = parseInt(document.getElementById('daily-goal-input').value) || 500;
-  document.getElementById('goal-text').innerText = appData.dailyGoal;
-  updateWordCounts();
-  saveData();
-}
-
-function countWords(str) {
-  if (!str) return 0;
-  return str.trim().split(/\s+/).filter(w => w.length > 0).length;
-}
-
-function updateWordCounts() {
-  let total = 0;
-  appData.chapters.forEach(c => total += countWords(c.content));
-  document.getElementById('total-words').innerText = total;
-  document.getElementById('top-book-sub').innerText = `${appData.chapters.length} Capítulos | ${total} Palabras totales`;
-
-  const goal = appData.dailyGoal || 500;
-  const pct = Math.min(100, Math.round((total / goal) * 100));
-  document.getElementById('goal-progress-bar').style.width = pct + '%';
-}
-
-// CRONÓMETRO POMODORO
-function startTimer() {
-  if (timerInterval) return;
-  timerInterval = setInterval(() => {
-    timeLeft--;
-    let m = Math.floor(timeLeft / 60);
-    let s = timeLeft % 60;
-    document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      alert("¡Tiempo cumplido! Descansa unos minutos.");
-    }
-  }, 1000);
-}
-
-function resetTimer() {
-  clearInterval(timerInterval);
-  timerInterval = null;
-  timeLeft = 1500;
-  document.getElementById('timer-display').innerText = "25:00";
-}
-
-// ORGANIZADOR
-function renderScenes() {
-  const list = document.getElementById('scene-list');
-  list.innerHTML = "";
-  if (!appData.scenes || appData.scenes.length === 0) {
-    list.innerHTML = `<div class="empty"><span class="big">📍</span><p>No hay escenas registradas.</p></div>`;
-    document.getElementById('stat-scenes-count').innerText = 0;
-    document.getElementById('stat-done-scenes').innerText = 0;
-    return;
-  }
-  let done = 0;
-  appData.scenes.forEach((sc, idx) => {
-    if (sc.status === 'terminada') done++;
-    const chap = appData.chapters.find(c => c.id === sc.chapterId);
-    const card = document.createElement('div');
-    card.className = "scene-card";
-    card.innerHTML = `
-      <div class="scene-header">
-        <span class="scene-title">${idx + 1}. ${sc.title}</span>
-        <span class="scene-badge badge-${sc.status || 'idea'}">${sc.status || 'idea'}</span>
-      </div>
-      <div class="scene-meta">
-        <span>📖 ${chap ? chap.title : 'Sin capítulo'}</span>
-        ${sc.location ? `<span>📍 ${sc.location}</span>` : ''}
-      </div>
-      <div class="scene-body">${sc.summary}</div>
-      <div class="scene-actions">
-        <button class="btn small" onclick="moveScene(${idx}, -1)">⬆️</button>
-        <button class="btn small" onclick="moveScene(${idx}, 1)">⬇️</button>
-        <button class="btn small" onclick="editScene(${idx})">✏️</button>
-        <button class="btn small danger" onclick="deleteScene(${idx})">🗑️</button>
-      </div>
-    `;
-    list.appendChild(card);
-  });
-  document.getElementById('stat-scenes-count').innerText = appData.scenes.length;
-  document.getElementById('stat-done-scenes').innerText = done;
-}
-
-function openSceneModal(editIdx = null) {
-  const isEdit = editIdx !== null;
-  const sc = isEdit ? appData.scenes[editIdx] : { title: '', summary: '', chapterId: activeChapterId, status: 'idea', location: '', characters: '' };
-  const title = prompt("Título de la escena:", sc.title);
-  if (title === null) return;
-  const summary = prompt("¿Qué sucede?", sc.summary);
-  const location = prompt("Lugar:", sc.location);
-  const status = prompt("Estado (idea / planificada / borrador / revisar / terminada):", sc.status);
-
-  const newScene = { title, summary, location, status: (status || 'idea').toLowerCase(), chapterId: sc.chapterId || activeChapterId };
-  if (isEdit) appData.scenes[editIdx] = newScene;
-  else appData.scenes.push(newScene);
-  saveData();
-  renderScenes();
-}
-
-function editScene(idx) { openSceneModal(idx); }
-
-function moveScene(idx, dir) {
-  const n = idx + dir;
-  if (n < 0 || n >= appData.scenes.length) return;
-  const t = appData.scenes[idx];
-  appData.scenes[idx] = appData.scenes[n];
-  appData.scenes[n] = t;
-  saveData();
-  renderScenes();
-}
-
-function deleteScene(idx) {
-  if (confirm("¿Eliminar escena?")) {
-    appData.scenes.splice(idx, 1);
-    saveData();
-    renderScenes();
-  }
-}
-
-// PERSONAJES
-function renderCharacters() {
-  const list = document.getElementById('character-list');
-  list.innerHTML = "";
-  appData.characters.forEach((char, idx) => {
-    const div = document.createElement('div');
-    div.className = "character";
-    div.innerHTML = `
-      <strong>${char.name}</strong>
-      <p>${char.desc}</p>
-      <button class="btn small danger" style="margin-top:8px" onclick="deleteCharacter(${idx})">Eliminar</button>
-    `;
-    list.appendChild(div);
-  });
-}
-
-function addCharacter() {
-  const name = prompt("Nombre del personaje:");
-  if (!name) return;
-  const desc = prompt("Descripción:");
-  appData.characters.push({ name, desc: desc || "" });
-  saveData();
-  renderCharacters();
-}
-
-function deleteCharacter(idx) {
-  if (confirm("¿Eliminar personaje?")) {
-    appData.characters.splice(idx, 1);
-    saveData();
-    renderCharacters();
-  }
-}
-
-// EXPORTAR / IMPORTAR
-function exportData() {
-  const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `${appData.title}_PRO_Backup.json`;
-  a.click();
-}
-
-function importData(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    try {
-      appData = JSON.parse(evt.target.result);
-      saveData();
-      renderAll();
-      showToast("Datos importados con éxito");
-    } catch(err) { alert("Error al leer archivo"); }
-  };
-  reader.readAsText(file);
-}
-</script>
-</body>
-</html>
+.field{width:100%;border:1px solid var(--line);background:var(--card-bg);border-radius:9px;padding:10px 11px;color:var(--ink);outline:none
