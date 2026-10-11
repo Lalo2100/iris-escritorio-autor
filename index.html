@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>I.R.I.S. — Escritorio de Autor PRO ULTIMATE</title>
+<!-- Librería para exportar a Word (.docx) -->
 <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
 <style>
 :root {
@@ -12,40 +13,48 @@
   --ink: #2d3748; --muted: #718096; --line: #e2e8f0; --pale: #f3f0ff;
   --shadow: 0 12px 35px rgba(45,55,72,.07); --card-bg: #ffffff;
 }
+
 body.dark-theme {
   --navy: #0f1017; --navy2: #181a26; --paper: #12141c; --white: #1a1d2d;
   --teal: #9f7aea; --teal-dark: #805ad5; --coral: #f6ad55; --gold: #d69e2e;
   --ink: #e2e8f0; --muted: #a0aec0; --line: #2d3748; --pale: #1a192b;
   --shadow: 0 12px 35px rgba(0,0,0,.5); --card-bg: #1a1d2d;
 }
+
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,"Segoe UI",Arial,sans-serif;font-size:14px;transition:background .3s, color .3s}
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
+
 .app{min-height:100vh;display:grid;grid-template-columns:255px minmax(0,1fr);transition:.3s}
 .app.focus-mode{grid-template-columns:0 minmax(0,1fr)}
 .app.focus-mode .sidebar{display:none}
+
 .sidebar{background:var(--navy);color:#f8f7f1;padding:25px 17px;display:flex;flex-direction:column;gap:28px;min-height:100vh}
 .brand{display:flex;align-items:center;gap:12px;padding:0 8px}
-.logo-box{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#805ad5,#d69e2e);display:grid;place-items:center;color:white;font-weight:bold;font-size:20px;box-shadow:0 6px 18px rgba(128,90,213,.3)}
+.logo-box{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#805ad5,#d69e2e);display:grid;place-items:center;color:white;font-family:Georgia,serif;font-size:22px;font-weight:bold;box-shadow:0 6px 18px rgba(128,90,213,.3)}
 .brandname{font-family:Georgia,serif;font-size:21px;letter-spacing:1.5px;color:#fff}
 .brandtag{font-size:9px;color:#d6bcfa;letter-spacing:1px;margin-top:3px;text-transform:uppercase}
+
 .nav-label{color:#a0aec0;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;padding:0 13px;margin-bottom:8px}
 .nav{display:grid;gap:6px}
 .nav button{display:flex;align-items:center;gap:12px;width:100%;border:0;background:transparent;color:#e2e8f0;padding:12px 13px;border-radius:12px;text-align:left;transition:.18s}
 .nav button:hover{background:rgba(255,255,255,.06)}
 .nav button.active{background:rgba(255,255,255,.12);color:#fff;box-shadow:inset 3px 0 var(--gold)}
 .nav .ico{width:21px;text-align:center;font-size:17px}
+
 .sidebar-bottom{margin-top:auto}
 .tip{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:15px;color:#e2e8f0;line-height:1.5}
 .tip strong{display:block;color:#fff;margin:7px 0 4px}
 .tip p{font-size:12px;color:#cbd5e0;margin:0}
+
 .main{min-width:0;padding:30px clamp(18px,3vw,42px) 45px}
 .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:28px}
 .eyebrow{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--teal);font-weight:800}
 .topbar h1{font-size:clamp(25px,3vw,34px);font-weight:650;letter-spacing:-1px;margin:7px 0 5px;color:var(--ink)}
 .subtitle{color:var(--muted);font-size:14px}
 .top-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+
 .btn{border:1px solid var(--line);background:var(--card-bg);color:var(--ink);padding:10px 14px;border-radius:10px;font-weight:650;transition:.15s}
 .btn:hover{transform:translateY(-1px);box-shadow:0 5px 12px rgba(0,0,0,.08)}
 .btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
@@ -53,6 +62,7 @@ button{cursor:pointer}
 .btn.dark{background:var(--navy);border-color:var(--navy);color:white}
 .btn.small{padding:7px 10px;font-size:12px}
 .btn.danger{background:#e53e3e;border-color:#e53e3e;color:white}
+
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:22px;align-items:start}
 .content{min-width:0}
 .panel{background:var(--card-bg);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:22px;margin-bottom:20px}
@@ -60,6 +70,8 @@ button{cursor:pointer}
 .panel h2{font-size:16px;margin:0;color:var(--ink)}
 .panel h3{margin:0;color:var(--ink)}
 .muted{color:var(--muted)}
+.tiny{font-size:12px}
+
 .book-hero{position:relative;overflow:hidden;background:var(--pale);display:grid;grid-template-columns:minmax(0,1fr) 145px;gap:20px;align-items:center}
 .book-title{width:100%;border:0;background:transparent;font-family:Georgia,serif;font-size:clamp(23px,3vw,31px);color:var(--ink);outline:none;padding:2px 0}
 .book-title:focus{border-bottom:1px solid var(--teal)}
@@ -67,9 +79,11 @@ button{cursor:pointer}
 .field{width:100%;border:1px solid var(--line);background:var(--card-bg);border-radius:9px;padding:10px 11px;color:var(--ink);outline:none}
 .field:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(107,70,193,.15)}
 .book-desc{resize:vertical;min-height:52px;max-height:140px;line-height:1.5}
+
 .hero-stat{z-index:1;text-align:center;background:var(--card-bg);border:1px solid var(--line);border-radius:16px;padding:18px 12px}
 .stat-number{font-size:30px;font-weight:750;color:var(--teal);letter-spacing:-1px}
 .stat-caption{font-size:11px;color:var(--muted);margin-top:4px}
+
 .chapter-list{display:grid;gap:8px}
 .chapter-row{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card-bg);transition:.15s}
 .chapter-row.selected{border-color:var(--teal);background:var(--pale)}
@@ -81,6 +95,7 @@ button{cursor:pointer}
 .chapter-meta{display:block;font-size:11px;color:var(--muted);margin-top:4px}
 .icon-btn{border:0;background:transparent;color:var(--muted);border-radius:8px;padding:7px}
 .icon-btn:hover{background:var(--pale);color:var(--ink)}
+
 .editor-panel{padding:0;overflow:hidden}
 .editor-top{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .crumb{font-size:12px;color:var(--muted)}
@@ -92,6 +107,7 @@ button{cursor:pointer}
 .writing-area::placeholder{color:var(--muted)}
 .editor-footer{padding:13px 22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:11px;background:var(--pale)}
 .status-dot{display:inline-block;width:7px;height:7px;background:#48bb78;border-radius:50%;margin-right:6px}
+
 .rightcol .panel{padding:19px}
 .side-heading{display:flex;align-items:center;gap:9px;margin-bottom:15px}
 .side-icon{width:32px;height:32px;display:grid;place-items:center;background:var(--pale);border-radius:10px;font-size:16px}
@@ -100,12 +116,14 @@ button{cursor:pointer}
 .metric strong{display:block;color:var(--ink);font-size:20px}
 .metric span{font-size:11px;color:var(--muted)}
 .note-area{width:100%;min-height:145px;resize:vertical;border:1px solid var(--line);border-radius:10px;background:var(--card-bg);padding:12px;color:var(--ink);line-height:1.6;outline:none}
+
 .character-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));gap:16px}
 .char-card{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--card-bg);display:flex;gap:14px;align-items:flex-start}
 .char-avatar{width:64px;height:64px;border-radius:14px;object-fit:cover;background:var(--pale);flex-shrink:0;border:1px solid var(--line)}
 .char-info{min-width:0;flex:1}
 .char-info strong{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
 .char-info p{font-size:12px;color:var(--muted);line-height:1.5;margin:0;white-space:pre-wrap}
+
 .scene-card{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--card-bg);margin-bottom:12px;box-shadow:0 3px 10px rgba(0,0,0,0.02)}
 .scene-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
 .scene-title{font-weight:700;color:var(--ink);font-size:15px}
@@ -118,13 +136,16 @@ button{cursor:pointer}
 .scene-meta{display:flex;gap:12px;font-size:12px;color:var(--muted);margin-bottom:10px;flex-wrap:wrap}
 .scene-body{font-size:13px;line-height:1.5;color:var(--ink);margin-bottom:12px}
 .scene-actions{display:flex;gap:6px;justify-content:flex-end}
+
 .goal-bar-container{background:var(--line);border-radius:8px;height:8px;width:100%;overflow:hidden;margin-top:8px}
 .goal-bar{background:var(--teal);height:100%;width:0%;transition:.3s}
+
 .empty{padding:25px 15px;text-align:center;color:var(--muted);background:var(--pale);border:1px dashed var(--line);border-radius:12px;line-height:1.6}
 .empty .big{font-size:26px;display:block;margin-bottom:8px}
 .hidden{display:none!important}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--navy);color:white;padding:12px 18px;border-radius:11px;box-shadow:0 12px 30px rgba(0,0,0,.3);z-index:10;opacity:0;pointer-events:none;transition:.2s}
 .toast.show{opacity:1}
+
 @media print {
   body { background: white !important; color: black !important; }
   .sidebar, .topbar, .editor-top, .editor-footer, .rightcol, .top-actions, .nav { display: none !important; }
@@ -156,8 +177,8 @@ button{cursor:pointer}
     </div>
     <div class="sidebar-bottom">
       <div class="tip">
-        <strong>💡 Despliegue Vercel</strong>
-        <p>Código totalmente compatible y optimizado.</p>
+        <strong>💡 Diseño y Tipografía</strong>
+        <p>Personaliza fuente, tamaño e interlineado desde la barra superior del editor.</p>
       </div>
     </div>
   </aside>
@@ -193,12 +214,33 @@ button{cursor:pointer}
             </div>
           </div>
 
-          <div class="panel editor-panel">
+          <div class="panel editor-panel" id="main-editor-panel">
             <div class="editor-top">
               <div class="crumb">Editando: <strong id="current-chapter-crumb">Capítulo 1</strong></div>
               <div class="toolbar">
                 <button class="btn small" onclick="openFindReplace()">🔍 Reemplazar</button>
                 <button class="btn small" onclick="toggleFocusMode()">👁️ Enfoque</button>
+                <select id="font-family-select" class="btn small" onchange="changeFontFamily(this.value)">
+                  <option value="Georgia, serif">Georgia</option>
+                  <option value="Inter, sans-serif">Inter</option>
+                  <option value="'Courier New', monospace">Courier</option>
+                </select>
+                <select id="font-size-select" class="btn small" onchange="changeFontSize(this.value)">
+                  <option value="16px">16px</option>
+                  <option value="18px" selected>18px</option>
+                  <option value="20px">20px</option>
+                  <option value="22px">22px</option>
+                </select>
+                <select id="line-height-select" class="btn small" onchange="changeLineHeight(this.value)">
+                  <option value="1.6">Línea normal</option>
+                  <option value="1.9" selected>Línea amplia (1.9)</option>
+                  <option value="2.2">Doble espacio</option>
+                </select>
+                <select id="theme-style-select" class="btn small" onchange="changeReadingTheme(this.value)">
+                  <option value="default">Estándar</option>
+                  <option value="sepia">Pergamino / Sepia</option>
+                  <option value="oled">Noche OLED</option>
+                </select>
                 <button class="btn small primary" onclick="addChapter()">+ Nuevo Capítulo</button>
               </div>
             </div>
@@ -343,6 +385,7 @@ let timeLeft = 1500;
 window.addEventListener('DOMContentLoaded', () => {
   loadStoredData();
   renderAll();
+  loadPreferences();
 });
 
 function loadStoredData() {
@@ -357,6 +400,18 @@ function loadStoredData() {
   } catch(e) { 
     console.error("Error al cargar datos desde localStorage", e); 
   }
+}
+
+function loadPreferences() {
+  const font = localStorage.getItem('IRIS_FONT_FAMILY');
+  const size = localStorage.getItem('IRIS_FONT_SIZE');
+  const lh = localStorage.getItem('IRIS_LINE_HEIGHT');
+  const theme = localStorage.getItem('IRIS_READING_THEME');
+
+  if (font) { document.getElementById('writing-area').style.fontFamily = font; document.getElementById('font-family-select').value = font; }
+  if (size) { document.getElementById('writing-area').style.fontSize = size; document.getElementById('font-size-select').value = size; }
+  if (lh) { document.getElementById('writing-area').style.lineHeight = lh; document.getElementById('line-height-select').value = lh; }
+  if (theme) { changeReadingTheme(theme); document.getElementById('theme-style-select').value = theme; }
 }
 
 function saveData() {
@@ -391,6 +446,42 @@ function toggleTheme() {
 
 function toggleFocusMode() {
   document.getElementById('app-container').classList.toggle('focus-mode');
+}
+
+function changeFontFamily(font) {
+  document.getElementById('writing-area').style.fontFamily = font;
+  localStorage.setItem('IRIS_FONT_FAMILY', font);
+}
+
+function changeFontSize(size) {
+  document.getElementById('writing-area').style.fontSize = size;
+  localStorage.setItem('IRIS_FONT_SIZE', size);
+}
+
+function changeLineHeight(lh) {
+  document.getElementById('writing-area').style.lineHeight = lh;
+  localStorage.setItem('IRIS_LINE_HEIGHT', lh);
+}
+
+function changeReadingTheme(theme) {
+  const area = document.getElementById('main-editor-panel');
+  if (theme === 'sepia') {
+    area.style.background = '#f4ecd8';
+    area.style.color = '#3b2f2f';
+    document.getElementById('writing-area').style.color = '#3b2f2f';
+    document.getElementById('chapter-title-input').style.color = '#3b2f2f';
+  } else if (theme === 'oled') {
+    area.style.background = '#000000';
+    area.style.color = '#e2e8f0';
+    document.getElementById('writing-area').style.color = '#e2e8f0';
+    document.getElementById('chapter-title-input').style.color = '#e2e8f0';
+  } else {
+    area.style.background = '';
+    area.style.color = '';
+    document.getElementById('writing-area').style.color = '';
+    document.getElementById('chapter-title-input').style.color = '';
+  }
+  localStorage.setItem('IRIS_READING_THEME', theme);
 }
 
 function renderAll() {
