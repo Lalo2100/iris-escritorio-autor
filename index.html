@@ -27,7 +27,7 @@ button{cursor:pointer}
 .app.focus-mode .sidebar{display:none}
 .sidebar{background:var(--navy);color:#f8f7f1;padding:25px 17px;display:flex;flex-direction:column;gap:28px;min-height:100vh}
 .brand{display:flex;align-items:center;gap:12px;padding:0 8px}
-.logo-icon{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#805ad5,#d69e2e);display:grid;place-items:center;color:white;font-family:Georgia,serif;font-size:22px;font-weight:bold;box-shadow:0 6px 18px rgba(128,90,213,.3)}
+.logo-box{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#805ad5,#d69e2e);display:grid;place-items:center;color:white;font-weight:bold;font-size:20px;box-shadow:0 6px 18px rgba(128,90,213,.3)}
 .brandname{font-family:Georgia,serif;font-size:21px;letter-spacing:1.5px;color:#fff}
 .brandtag{font-size:9px;color:#d6bcfa;letter-spacing:1px;margin-top:3px;text-transform:uppercase}
 .nav-label{color:#a0aec0;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;padding:0 13px;margin-bottom:8px}
@@ -60,7 +60,6 @@ button{cursor:pointer}
 .panel h2{font-size:16px;margin:0;color:var(--ink)}
 .panel h3{margin:0;color:var(--ink)}
 .muted{color:var(--muted)}
-.tiny{font-size:12px}
 .book-hero{position:relative;overflow:hidden;background:var(--pale);display:grid;grid-template-columns:minmax(0,1fr) 145px;gap:20px;align-items:center}
 .book-title{width:100%;border:0;background:transparent;font-family:Georgia,serif;font-size:clamp(23px,3vw,31px);color:var(--ink);outline:none;padding:2px 0}
 .book-title:focus{border-bottom:1px solid var(--teal)}
@@ -140,5 +139,592 @@ button{cursor:pointer}
 <div class="app" id="app-container">
   <aside class="sidebar">
     <div class="brand">
-      <div class="logo-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 14
+      <div class="logo-box">I</div>
+      <div>
+        <div class="brandname">I.R.I.S.</div>
+        <div class="brandtag">Escritorio de Autor</div>
+      </div>
+    </div>
+    <div>
+      <div class="nav-label">Navegación</div>
+      <nav class="nav">
+        <button id="nav-editor" class="active" onclick="switchTab('editor')"><span class="ico">✍️</span> Editor y Capítulos</button>
+        <button id="nav-organizer" onclick="switchTab('organizer')"><span class="ico">📍</span> Organizador Narrativo</button>
+        <button id="nav-characters" onclick="switchTab('characters')"><span class="ico">👤</span> Personajes y Galería</button>
+        <button id="nav-export" onclick="switchTab('export')"><span class="ico">💾</span> Guardar y Exportar</button>
+      </nav>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="tip">
+        <strong>💡 Despliegue Vercel</strong>
+        <p>Código totalmente compatible y optimizado.</p>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="eyebrow">Proyecto Activo</div>
+        <h1 id="top-book-title">Proyecto I.R.I.S.</h1>
+        <div class="subtitle" id="top-book-sub">Cargando datos...</div>
+      </div>
+      <div class="top-actions">
+        <button class="btn small" onclick="toggleTheme()">🌙 Tema</button>
+        <button class="btn primary small" onclick="exportWord()">📥 Word (.docx)</button>
+        <button class="btn primary small" onclick="exportPDF()">🖨️ PDF</button>
+        <button class="btn dark small" onclick="exportData()">💾 JSON</button>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 1: EDITOR -->
+    <div id="tab-editor" class="tab-content">
+      <div class="layout">
+        <div class="content">
+          <div class="panel book-hero">
+            <div>
+              <input type="text" id="book-title-input" class="book-title" placeholder="Título de la obra" oninput="updateBookInfo()">
+              <label class="field-label">SINOPSIS GENERAL</label>
+              <textarea id="book-desc-input" class="field book-desc" placeholder="Resumen o sinopsis del libro..." oninput="updateBookInfo()"></textarea>
+            </div>
+            <div class="hero-stat">
+              <div class="stat-number" id="total-words">0</div>
+              <div class="stat-caption">Palabras Totales</div>
+            </div>
+          </div>
+
+          <div class="panel editor-panel">
+            <div class="editor-top">
+              <div class="crumb">Editando: <strong id="current-chapter-crumb">Capítulo 1</strong></div>
+              <div class="toolbar">
+                <button class="btn small" onclick="openFindReplace()">🔍 Reemplazar</button>
+                <button class="btn small" onclick="toggleFocusMode()">👁️ Enfoque</button>
+                <button class="btn small primary" onclick="addChapter()">+ Nuevo Capítulo</button>
+              </div>
+            </div>
+            <div class="editor-body">
+              <input type="text" id="chapter-title-input" class="chapter-title-input" placeholder="Título del capítulo..." oninput="saveCurrentChapter()">
+              <textarea id="writing-area" class="writing-area" placeholder="Escribe aquí tu manuscrito..." oninput="saveCurrentChapter()"></textarea>
+            </div>
+            <div class="editor-footer">
+              <div><span class="status-dot"></span><span id="save-status">Guardado automático activo</span></div>
+              <div>Palabras en capítulo: <strong id="chapter-words">0</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rightcol">
+          <div class="panel">
+            <div class="side-heading">
+              <div class="side-icon">🎯</div>
+              <h3>Meta Diaria</h3>
+            </div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Objetivo: <span id="goal-text">500</span> palabras</div>
+            <input type="number" id="daily-goal-input" class="field" value="500" style="padding:6px 8px;font-size:12px" onchange="updateGoal()">
+            <div class="goal-bar-container">
+              <div class="goal-bar" id="goal-progress-bar"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="side-heading">
+              <div class="side-icon">⏱️</div>
+              <h3>Pomodoro de Autor</h3>
+            </div>
+            <div id="timer-display" style="font-size:24px;font-weight:700;color:var(--ink);text-align:center;margin-bottom:10px">25:00</div>
+            <div style="display:flex;gap:6px;justify-content:center">
+              <button class="btn small primary" onclick="startTimer()">Iniciar</button>
+              <button class="btn small" onclick="resetTimer()">Reiniciar</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="side-heading">
+              <div class="side-icon">📖</div>
+              <h3>Capítulos</h3>
+            </div>
+            <div class="chapter-list" id="chapter-list"></div>
+          </div>
+
+          <div class="panel">
+            <div class="side-heading">
+              <div class="side-icon">📌</div>
+              <h3>Notas Rápidas</h3>
+            </div>
+            <textarea id="quick-notes" class="note-area" placeholder="Notas de trabajo..." oninput="saveNotes()"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 2: ORGANIZADOR NARRATIVO -->
+    <div id="tab-organizer" class="tab-content hidden">
+      <div class="layout">
+        <div class="content">
+          <div class="panel">
+            <div class="panel-head">
+              <h2>📍 Organizador de Escenas y Tramas</h2>
+              <button class="btn primary small" onclick="openSceneModal()">+ Nueva Escena</button>
+            </div>
+            <div id="scene-list"></div>
+          </div>
+        </div>
+        <div class="rightcol">
+          <div class="panel">
+            <div class="side-heading">
+              <div class="side-icon">📊</div>
+              <h3>Resumen de Escenas</h3>
+            </div>
+            <div class="metric-grid">
+              <div class="metric"><strong id="stat-scenes-count">0</strong><span>Escenas</span></div>
+              <div class="metric"><strong id="stat-done-scenes">0</strong><span>Terminadas</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 3: PERSONAJES -->
+    <div id="tab-characters" class="tab-content hidden">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>👤 Galería de Personajes y Escenarios</h2>
+          <button class="btn primary small" onclick="addCharacter()">+ Agregar Personaje</button>
+        </div>
+        <div class="character-grid" id="character-list"></div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 4: RESPALDOS -->
+    <div id="tab-export" class="tab-content hidden">
+      <div class="panel">
+        <h2>💾 Copias de Seguridad y Formatos</h2>
+        <p class="muted">Exporta tu libro completo a Word, PDF o guarda respaldos JSON.</p>
+        <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap">
+          <button class="btn primary" onclick="exportWord()">📥 Descargar en Word (.docx)</button>
+          <button class="btn primary" onclick="exportPDF()">🖨️ Guardar como PDF</button>
+          <button class="btn dark" onclick="exportData()">Descargar Respaldo JSON</button>
+          <label class="btn dark" style="cursor:pointer">
+            Cargar Respaldo JSON <input type="file" id="import-file" style="display:none" onchange="importData(event)">
+          </label>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="toast" class="toast">Notificación</div>
+
+<script>
+const DEFAULT_DATA = {
+  title: "Proyecto I.R.I.S.",
+  description: "Investigación y desarrollo del proyecto I.R.I.S.",
+  notes: "Revisar escenas del campus.",
+  dailyGoal: 500,
+  chapters: [
+    { id: "chap-1", title: "Capítulo 1: Presentación del Proyecto", content: "Gabriel Santoro acomodó sus anteojos mientras miraba las notas..." }
+  ],
+  characters: [
+    { name: "Gabriel Santoro", desc: "Protagonista principal. Profesor universitario de Historia de 40 años, metódico y observador.", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" },
+    { name: "Caterina", desc: "Hija de Gabriel y su mayor tesoro. Amante de los libros.", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150" },
+    { name: "Laura Méndez", desc: "Coordinación de investigación universitaria.", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150" },
+    { name: "Elena Valdés", desc: "Especialista en decisiones colectivas y comunicación.", img: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150" }
+  ],
+  scenes: [
+    { title: "Encuentro en la Universidad", summary: "Laura convoca a Gabriel para presentar los avances.", location: "Universidad", characters: "Gabriel, Laura", status: "borrador", chapterId: "chap-1", continuity: "Lleva su carpeta." }
+  ]
+};
+
+let appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+let activeChapterId = "chap-1";
+let timerInterval = null;
+let timeLeft = 1500;
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadStoredData();
+  renderAll();
+});
+
+function loadStoredData() {
+  try {
+    const saved = localStorage.getItem('IRIS_AUTHOR_DATA_PRO_ULTIMATE');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      appData = { ...appData, ...parsed };
+      if (!appData.chapters || appData.chapters.length === 0) appData.chapters = DEFAULT_DATA.chapters;
+      activeChapterId = appData.chapters[0].id;
+    }
+  } catch(e) { 
+    console.error("Error al cargar datos desde localStorage", e); 
+  }
+}
+
+function saveData() {
+  try {
+    localStorage.setItem('IRIS_AUTHOR_DATA_PRO_ULTIMATE', JSON.stringify(appData));
+    showToast("Guardado automáticamente");
+  } catch(e) {
+    console.error("Error al guardar en localStorage", e);
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.innerText = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.nav button').forEach(el => el.classList.remove('active'));
+  const targetTab = document.getElementById(`tab-${tab}`);
+  const targetNav = document.getElementById(`nav-${tab}`);
+  if (targetTab) targetTab.classList.remove('hidden');
+  if (targetNav) targetNav.classList.add('active');
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('dark-theme');
+}
+
+function toggleFocusMode() {
+  document.getElementById('app-container').classList.toggle('focus-mode');
+}
+
+function renderAll() {
+  document.getElementById('book-title-input').value = appData.title || "";
+  document.getElementById('book-desc-input').value = appData.description || "";
+  document.getElementById('quick-notes').value = appData.notes || "";
+  document.getElementById('daily-goal-input').value = appData.dailyGoal || 500;
+  document.getElementById('goal-text').innerText = appData.dailyGoal || 500;
+  document.getElementById('top-book-title').innerText = appData.title || "Sin título";
+
+  renderChapters();
+  renderActiveChapter();
+  renderScenes();
+  renderCharacters();
+  updateWordCounts();
+}
+
+function renderChapters() {
+  const list = document.getElementById('chapter-list');
+  if (!list) return;
+  list.innerHTML = "";
+  appData.chapters.forEach((chap, idx) => {
+    const isSelected = chap.id === activeChapterId;
+    const row = document.createElement('div');
+    row.className = `chapter-row ${isSelected ? 'selected' : ''}`;
+    row.innerHTML = `
+      <button class="chapter-pick" onclick="selectChapter('${chap.id}')">
+        <div class="chapter-number">${idx + 1}</div>
+        <div class="chapter-text">
+          <span class="chapter-name">${chap.title || 'Sin título'}</span>
+          <span class="chapter-meta">${countWords(chap.content)} palabras</span>
+        </div>
+      </button>
+      <button class="icon-btn" onclick="deleteChapter('${chap.id}')" title="Eliminar">🗑️</button>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function selectChapter(id) {
+  activeChapterId = id;
+  renderChapters();
+  renderActiveChapter();
+}
+
+function renderActiveChapter() {
+  const chap = appData.chapters.find(c => c.id === activeChapterId);
+  if (!chap) return;
+  document.getElementById('current-chapter-crumb').innerText = chap.title;
+  document.getElementById('chapter-title-input').value = chap.title;
+  document.getElementById('writing-area').value = chap.content;
+  document.getElementById('chapter-words').innerText = countWords(chap.content);
+}
+
+function saveCurrentChapter() {
+  const chap = appData.chapters.find(c => c.id === activeChapterId);
+  if (!chap) return;
+  chap.title = document.getElementById('chapter-title-input').value;
+  chap.content = document.getElementById('writing-area').value;
+  document.getElementById('chapter-words').innerText = countWords(chap.content);
+  updateWordCounts();
+  saveData();
+  renderChapters();
+}
+
+function addChapter() {
+  const newId = "chap-" + Date.now();
+  appData.chapters.push({ id: newId, title: `Capítulo ${appData.chapters.length + 1}`, content: "" });
+  activeChapterId = newId;
+  saveData();
+  renderAll();
+}
+
+function deleteChapter(id) {
+  if (appData.chapters.length <= 1) {
+    alert("Debes conservar al menos un capítulo.");
+    return;
+  }
+  if (confirm("¿Eliminar este capítulo?")) {
+    appData.chapters = appData.chapters.filter(c => c.id !== id);
+    activeChapterId = appData.chapters[0].id;
+    saveData();
+    renderAll();
+  }
+}
+
+function openFindReplace() {
+  const searchStr = prompt("¿Qué palabra o frase deseas buscar?");
+  if (!searchStr) return;
+  const replaceStr = prompt(`Reemplazar "${searchStr}" por:`);
+  if (replaceStr === null) return;
+
+  let totalReplacements = 0;
+  const regex = new RegExp(searchStr, "gi");
+
+  appData.chapters.forEach(chap => {
+    if (chap.content) {
+      const matches = (chap.content.match(regex) || []).length;
+      if (matches > 0) {
+        chap.content = chap.content.replace(regex, replaceStr);
+        totalReplacements += matches;
+      }
+    }
+  });
+
+  if (totalReplacements > 0) {
+    saveData();
+    renderAll();
+    alert(`¡Éxito! Se realizaron ${totalReplacements} reemplazos en toda la obra.`);
+  } else {
+    alert(`No se encontró la palabra "${searchStr}" en ningún capítulo.`);
+  }
+}
+
+function updateBookInfo() {
+  appData.title = document.getElementById('book-title-input').value;
+  appData.description = document.getElementById('book-desc-input').value;
+  document.getElementById('top-book-title').innerText = appData.title || "Sin título";
+  saveData();
+}
+
+function saveNotes() {
+  appData.notes = document.getElementById('quick-notes').value;
+  saveData();
+}
+
+function updateGoal() {
+  appData.dailyGoal = parseInt(document.getElementById('daily-goal-input').value) || 500;
+  document.getElementById('goal-text').innerText = appData.dailyGoal;
+  updateWordCounts();
+  saveData();
+}
+
+function countWords(str) {
+  if (!str) return 0;
+  return str.trim().split(/\s+/).filter(w => w.length > 0).length;
+}
+
+function updateWordCounts() {
+  let total = 0;
+  appData.chapters.forEach(c => total += countWords(c.content));
+  document.getElementById('total-words').innerText = total;
+  document.getElementById('top-book-sub').innerText = `${appData.chapters.length} Capítulos | ${total} Palabras totales`;
+
+  const goal = appData.dailyGoal || 500;
+  const pct = Math.min(100, Math.round((total / goal) * 100));
+  const progressBar = document.getElementById('goal-progress-bar');
+  if (progressBar) progressBar.style.width = pct + '%';
+}
+
+function startTimer() {
+  if (timerInterval) return;
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    let m = Math.floor(timeLeft / 60);
+    let s = timeLeft % 60;
+    document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      alert("¡Tiempo de descanso!");
+    }
+  }, 1000);
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  timeLeft = 1500;
+  document.getElementById('timer-display').innerText = "25:00";
+}
+
+function renderScenes() {
+  const list = document.getElementById('scene-list');
+  if (!list) return;
+  list.innerHTML = "";
+  if (!appData.scenes || appData.scenes.length === 0) {
+    list.innerHTML = `<div class="empty"><span class="big">📍</span><p>No hay escenas registradas.</p></div>`;
+    document.getElementById('stat-scenes-count').innerText = 0;
+    document.getElementById('stat-done-scenes').innerText = 0;
+    return;
+  }
+  let done = 0;
+  appData.scenes.forEach((sc, idx) => {
+    if (sc.status === 'terminada') done++;
+    const chap = appData.chapters.find(c => c.id === sc.chapterId);
+    const card = document.createElement('div');
+    card.className = "scene-card";
+    card.innerHTML = `
+      <div class="scene-header">
+        <span class="scene-title">${idx + 1}. ${sc.title}</span>
+        <span class="scene-badge badge-${sc.status || 'idea'}">${sc.status || 'idea'}</span>
+      </div>
+      <div class="scene-meta">
+        <span>📖 ${chap ? chap.title : 'Sin capítulo'}</span>
+        ${sc.location ? `<span>📍 ${sc.location}</span>` : ''}
+      </div>
+      <div class="scene-body">${sc.summary}</div>
+      <div class="scene-actions">
+        <button class="btn small" onclick="moveScene(${idx}, -1)">⬆️</button>
+        <button class="btn small" onclick="moveScene(${idx}, 1)">⬇️</button>
+        <button class="btn small" onclick="editScene(${idx})">✏️</button>
+        <button class="btn small danger" onclick="deleteScene(${idx})">🗑️</button>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+  document.getElementById('stat-scenes-count').innerText = appData.scenes.length;
+  document.getElementById('stat-done-scenes').innerText = done;
+}
+
+function openSceneModal(editIdx = null) {
+  const isEdit = editIdx !== null;
+  const sc = isEdit ? appData.scenes[editIdx] : { title: '', summary: '', chapterId: activeChapterId, status: 'idea', location: '', characters: '' };
+  const title = prompt("Título de la escena:", sc.title);
+  if (title === null) return;
+  const summary = prompt("¿Qué sucede?", sc.summary);
+  const location = prompt("Lugar:", sc.location);
+  const status = prompt("Estado (idea / planificada / borrador / revisar / terminada):", sc.status);
+
+  const newScene = { title, summary, location, status: (status || 'idea').toLowerCase(), chapterId: sc.chapterId || activeChapterId };
+  if (isEdit) appData.scenes[editIdx] = newScene;
+  else appData.scenes.push(newScene);
+  saveData();
+  renderScenes();
+}
+
+function editScene(idx) { openSceneModal(idx); }
+
+function moveScene(idx, dir) {
+  const n = idx + dir;
+  if (n < 0 || n >= appData.scenes.length) return;
+  const t = appData.scenes[idx];
+  appData.scenes[idx] = appData.scenes[n];
+  appData.scenes[n] = t;
+  saveData();
+  renderScenes();
+}
+
+function deleteScene(idx) {
+  if (confirm("¿Eliminar escena?")) {
+    appData.scenes.splice(idx, 1);
+    saveData();
+    renderScenes();
+  }
+}
+
+function renderCharacters() {
+  const list = document.getElementById('character-list');
+  if (!list) return;
+  list.innerHTML = "";
+  appData.characters.forEach((char, idx) => {
+    const card = document.createElement('div');
+    card.className = "char-card";
+    card.innerHTML = `
+      <img src="${char.img || 'https://via.placeholder.com/150'}" class="char-avatar" alt="${char.name}">
+      <div class="char-info">
+        <strong>${char.name}</strong>
+        <p>${char.desc}</p>
+        <button class="btn small danger" style="margin-top:8px" onclick="deleteCharacter(${idx})">Eliminar</button>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function addCharacter() {
+  const name = prompt("Nombre del personaje:");
+  if (!name) return;
+  const desc = prompt("Descripción:");
+  const img = prompt("URL de la imagen de perfil (opcional):");
+  appData.characters.push({ name, desc: desc || "", img: img || "" });
+  saveData();
+  renderCharacters();
+}
+
+function deleteCharacter(idx) {
+  if (confirm("¿Eliminar personaje?")) {
+    appData.characters.splice(idx, 1);
+    saveData();
+    renderCharacters();
+  }
+}
+
+function exportWord() {
+  if (typeof htmlDocx === 'undefined') {
+    alert("Cargando módulo de Word... Por favor intenta en unos segundos.");
+    return;
+  }
+  let htmlContent = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${appData.title}</title></head><body style="font-family:Arial, sans-serif; line-height: 1.6;">`;
+  htmlContent += `<h1 style="text-align:center; color:#1f2038;">${appData.title}</h1>`;
+  htmlContent += `<p style="text-align:center; font-style:italic; color:#555;">Sinopsis: ${appData.description}</p><br><hr><br>`;
+  
+  appData.chapters.forEach((c, idx) => {
+    htmlContent += `<h2 style="color:#1f2038;">Capítulo ${idx + 1}: ${c.title}</h2>`;
+    let formattedText = (c.content || "").replace(/\n/g, '<br>');
+    htmlContent += `<p>${formattedText}</p><br><br>`;
+  });
+  htmlContent += `</body></html>`;
+
+  const converted = htmlDocx.asBlob(htmlContent);
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(converted);
+  link.download = `${appData.title || 'Libro'}.docx`;
+  link.click();
+  showToast("¡Libro exportado a Word con éxito!");
+}
+
+function exportPDF() {
+  window.print();
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${appData.title}_Backup.json`;
+  a.click();
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    try {
+      appData = JSON.parse(evt.target.result);
+      saveData();
+      renderAll();
+      showToast("Datos restaurados");
+    } catch(err) { alert("Error al importar el archivo JSON"); }
+  };
+  reader.readAsText(file);
+}
+</script>
+</body>
+</html>
