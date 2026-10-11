@@ -3,40 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>I.R.I.S. — Escritorio de Autor PRO</title>
+<title>I.R.I.S. — Escritorio de Autor PRO ULTIMATE</title>
+<!-- Librería para exportar a Word (.docx) -->
+<script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
 <style>
 :root {
-  --navy: #17263f;
-  --navy2: #223752;
-  --paper: #f7f3eb;
-  --white: #fffefa;
-  --teal: #278c83;
-  --teal-dark: #1d7069;
-  --coral: #d98270;
-  --gold: #c5a15d;
-  --ink: #253247;
-  --muted: #788293;
-  --line: #e7e2d8;
-  --pale: #e8f3f0;
-  --shadow: 0 12px 35px rgba(27,42,63,.07);
-  --card-bg: #fffefa;
+  --navy: #17263f; --navy2: #223752; --paper: #f7f3eb; --white: #fffefa;
+  --teal: #278c83; --teal-dark: #1d7069; --coral: #d98270; --gold: #c5a15d;
+  --ink: #253247; --muted: #788293; --line: #e7e2d8; --pale: #e8f3f0;
+  --shadow: 0 12px 35px rgba(27,42,63,.07); --card-bg: #fffefa;
 }
 
 body.dark-theme {
-  --navy: #0d1726;
-  --navy2: #152238;
-  --paper: #121926;
-  --white: #1a2332;
-  --teal: #33a397;
-  --teal-dark: #247c73;
-  --coral: #e09383;
-  --gold: #d4b270;
-  --ink: #e6edf5;
-  --muted: #8e9bb0;
-  --line: #2a364a;
-  --pale: #1c2b3d;
-  --shadow: 0 12px 35px rgba(0,0,0,.4);
-  --card-bg: #1a2332;
+  --navy: #0d1726; --navy2: #152238; --paper: #121926; --white: #1a2332;
+  --teal: #33a397; --teal-dark: #247c73; --coral: #e09383; --gold: #d4b270;
+  --ink: #e6edf5; --muted: #8e9bb0; --line: #2a364a; --pale: #1c2b3d;
+  --shadow: 0 12px 35px rgba(0,0,0,.4); --card-bg: #1a2332;
 }
 
 *{box-sizing:border-box}
@@ -135,7 +117,6 @@ button{cursor:pointer}
 .metric span{font-size:11px;color:var(--muted)}
 .note-area{width:100%;min-height:145px;resize:vertical;border:1px solid var(--line);border-radius:10px;background:var(--card-bg);padding:12px;color:var(--ink);line-height:1.6;outline:none}
 
-/* Personajes con foto */
 .character-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));gap:16px}
 .char-card{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--card-bg);display:flex;gap:14px;align-items:flex-start}
 .char-avatar{width:64px;height:64px;border-radius:14px;object-fit:cover;background:var(--pale);flex-shrink:0;border:1px solid var(--line)}
@@ -143,7 +124,6 @@ button{cursor:pointer}
 .char-info strong{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
 .char-info p{font-size:12px;color:var(--muted);line-height:1.5;margin:0;white-space:pre-wrap}
 
-/* Escenas */
 .scene-card{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--card-bg);margin-bottom:12px;box-shadow:0 3px 10px rgba(0,0,0,0.02)}
 .scene-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
 .scene-title{font-weight:700;color:var(--ink);font-size:15px}
@@ -157,7 +137,6 @@ button{cursor:pointer}
 .scene-body{font-size:13px;line-height:1.5;color:var(--ink);margin-bottom:12px}
 .scene-actions{display:flex;gap:6px;justify-content:flex-end}
 
-/* Barras */
 .goal-bar-container{background:var(--line);border-radius:8px;height:8px;width:100%;overflow:hidden;margin-top:8px}
 .goal-bar{background:var(--teal);height:100%;width:0%;transition:.3s}
 
@@ -169,6 +148,16 @@ button{cursor:pointer}
 
 @media(max-width:1050px){.layout{grid-template-columns:minmax(0,1fr) 230px}.app{grid-template-columns:215px minmax(0,1fr)}}
 @media(max-width:780px){.app{display:block}.sidebar{min-height:auto;padding:13px 14px;gap:14px}.main{padding:20px 13px 32px}.layout{grid-template-columns:1fr}}
+
+/* Estilos de impresión para PDF limpios */
+@media print {
+  body { background: white !important; color: black !important; }
+  .sidebar, .topbar, .editor-top, .editor-footer, .rightcol, .top-actions, .nav { display: none !important; }
+  .app { display: block !important; }
+  .main { padding: 0 !important; }
+  .panel { border: 0 !important; box-shadow: none !important; padding: 0 !important; }
+  .writing-area { font-family: Georgia, serif !important; font-size: 14pt !important; line-height: 1.6 !important; color: black !important; height: auto !important; }
+}
 </style>
 </head>
 <body>
@@ -192,8 +181,8 @@ button{cursor:pointer}
     </div>
     <div class="sidebar-bottom">
       <div class="tip">
-        <strong>💡 Modo Enfoque</strong>
-        <p>Usa el botón "Enfoque" para escribir sin distracciones visuales.</p>
+        <strong>💡 Exportar Libro</strong>
+        <p>Usa los botones superiores para descargar tu novela en Word (.docx) o PDF.</p>
       </div>
     </div>
   </aside>
@@ -206,9 +195,10 @@ button{cursor:pointer}
         <div class="subtitle" id="top-book-sub">Cargando datos...</div>
       </div>
       <div class="top-actions">
-        <button class="btn small" onclick="toggleTheme()">🌙 M. Oscuro</button>
-        <button class="btn primary small" onclick="exportFullText()">📖 Descargar Libro (.TXT)</button>
-        <button class="btn dark small" onclick="exportData()">💾 Copia JSON</button>
+        <button class="btn small" onclick="toggleTheme()">🌙 Modo</button>
+        <button class="btn primary small" onclick="exportWord()">📥 Descargar Word (.docx)</button>
+        <button class="btn primary small" onclick="exportPDF()">🖨️ Guardar PDF / Imprimir</button>
+        <button class="btn dark small" onclick="exportData()">💾 Respaldo JSON</button>
       </div>
     </div>
 
@@ -332,12 +322,14 @@ button{cursor:pointer}
     <!-- SECCIÓN 4: RESPALDOS -->
     <div id="tab-export" class="tab-content hidden">
       <div class="panel">
-        <h2>💾 Copias de Seguridad y Respaldos</h2>
-        <p class="muted">Descarga copias de respaldo en formato JSON o impórtalas para restaurar tu trabajo.</p>
+        <h2>💾 Copias de Seguridad y Formatos</h2>
+        <p class="muted">Exporta tu libro completo a Word, PDF o guarda respaldos JSON.</p>
         <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap">
-          <button class="btn primary" onclick="exportData()">Descargar Copia JSON</button>
+          <button class="btn primary" onclick="exportWord()">📥 Descargar en Word (.docx)</button>
+          <button class="btn primary" onclick="exportPDF()">🖨️ Guardar como PDF</button>
+          <button class="btn dark" onclick="exportData()">Descargar Respaldo JSON</button>
           <label class="btn dark" style="cursor:pointer">
-            Cargar Copia JSON <input type="file" id="import-file" style="display:none" onchange="importData(event)">
+            Cargar Respaldo JSON <input type="file" id="import-file" style="display:none" onchange="importData(event)">
           </label>
         </div>
       </div>
@@ -562,144 +554,4 @@ function renderScenes() {
   if (!appData.scenes || appData.scenes.length === 0) {
     list.innerHTML = `<div class="empty"><span class="big">📍</span><p>No hay escenas registradas.</p></div>`;
     document.getElementById('stat-scenes-count').innerText = 0;
-    document.getElementById('stat-done-scenes').innerText = 0;
-    return;
-  }
-  let done = 0;
-  appData.scenes.forEach((sc, idx) => {
-    if (sc.status === 'terminada') done++;
-    const chap = appData.chapters.find(c => c.id === sc.chapterId);
-    const card = document.createElement('div');
-    card.className = "scene-card";
-    card.innerHTML = `
-      <div class="scene-header">
-        <span class="scene-title">${idx + 1}. ${sc.title}</span>
-        <span class="scene-badge badge-${sc.status || 'idea'}">${sc.status || 'idea'}</span>
-      </div>
-      <div class="scene-meta">
-        <span>📖 ${chap ? chap.title : 'Sin capítulo'}</span>
-        ${sc.location ? `<span>📍 ${sc.location}</span>` : ''}
-      </div>
-      <div class="scene-body">${sc.summary}</div>
-      <div class="scene-actions">
-        <button class="btn small" onclick="moveScene(${idx}, -1)">⬆️</button>
-        <button class="btn small" onclick="moveScene(${idx}, 1)">⬇️</button>
-        <button class="btn small" onclick="editScene(${idx})">✏️</button>
-        <button class="btn small danger" onclick="deleteScene(${idx})">🗑️</button>
-      </div>
-    `;
-    list.appendChild(card);
-  });
-  document.getElementById('stat-scenes-count').innerText = appData.scenes.length;
-  document.getElementById('stat-done-scenes').innerText = done;
-}
-
-function openSceneModal(editIdx = null) {
-  const isEdit = editIdx !== null;
-  const sc = isEdit ? appData.scenes[editIdx] : { title: '', summary: '', chapterId: activeChapterId, status: 'idea', location: '', characters: '' };
-  const title = prompt("Título de la escena:", sc.title);
-  if (title === null) return;
-  const summary = prompt("¿Qué sucede?", sc.summary);
-  const location = prompt("Lugar:", sc.location);
-  const status = prompt("Estado (idea / planificada / borrador / revisar / terminada):", sc.status);
-
-  const newScene = { title, summary, location, status: (status || 'idea').toLowerCase(), chapterId: sc.chapterId || activeChapterId };
-  if (isEdit) appData.scenes[editIdx] = newScene;
-  else appData.scenes.push(newScene);
-  saveData();
-  renderScenes();
-}
-
-function editScene(idx) { openSceneModal(idx); }
-
-function moveScene(idx, dir) {
-  const n = idx + dir;
-  if (n < 0 || n >= appData.scenes.length) return;
-  const t = appData.scenes[idx];
-  appData.scenes[idx] = appData.scenes[n];
-  appData.scenes[n] = t;
-  saveData();
-  renderScenes();
-}
-
-function deleteScene(idx) {
-  if (confirm("¿Eliminar escena?")) {
-    appData.scenes.splice(idx, 1);
-    saveData();
-    renderScenes();
-  }
-}
-
-function renderCharacters() {
-  const list = document.getElementById('character-list');
-  list.innerHTML = "";
-  appData.characters.forEach((char, idx) => {
-    const card = document.createElement('div');
-    card.className = "char-card";
-    card.innerHTML = `
-      <img src="${char.img || 'https://via.placeholder.com/150'}" class="char-avatar" alt="${char.name}">
-      <div class="char-info">
-        <strong>${char.name}</strong>
-        <p>${char.desc}</p>
-        <button class="btn small danger" style="margin-top:8px" onclick="deleteCharacter(${idx})">Eliminar</button>
-      </div>
-    `;
-    list.appendChild(card);
-  });
-}
-
-function addCharacter() {
-  const name = prompt("Nombre del personaje:");
-  if (!name) return;
-  const desc = prompt("Descripción:");
-  const img = prompt("URL de la imagen de perfil (opcional):");
-  appData.characters.push({ name, desc: desc || "", img: img || "" });
-  saveData();
-  renderCharacters();
-}
-
-function deleteCharacter(idx) {
-  if (confirm("¿Eliminar personaje?")) {
-    appData.characters.splice(idx, 1);
-    saveData();
-    renderCharacters();
-  }
-}
-
-function exportFullText() {
-  let full = `${appData.title.toUpperCase()}\n\nSINOPSIS:\n${appData.description}\n\n` + "=".repeat(40) + "\n\n";
-  appData.chapters.forEach((c, idx) => {
-    full += `CAPÍTULO ${idx + 1}: ${c.title.toUpperCase()}\n\n${c.content}\n\n` + "-".repeat(40) + "\n\n";
-  });
-  const blob = new Blob([full], { type: 'text/plain;charset=utf-8' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `${appData.title}_Libro_Completo.txt`;
-  a.click();
-}
-
-function exportData() {
-  const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `${appData.title}_Backup.json`;
-  a.click();
-}
-
-function importData(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    try {
-      appData = JSON.parse(evt.target.result);
-      saveData();
-      renderAll();
-      showToast("Datos restaurados");
-    } catch(err) { alert("Error al importar"); }
-  };
-  reader.readAsText(file);
-}
-</script>
-</body>
-</html>
+    document.getElementById('stat-done-scenes').
