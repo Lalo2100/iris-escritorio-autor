@@ -117,9 +117,8 @@
         }
 
         ul.item-list li {
-            padding: 9px 12px;
+            padding: 8px 10px;
             border-radius: 6px;
-            cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -364,7 +363,6 @@
         const backupStatus = document.getElementById('backupStatus');
         const soundToggle = document.getElementById('soundToggle');
 
-        // Estructura de capítulos respaldada en localStorage
         let capitulos = JSON.parse(localStorage.getItem('iris_capitulos_data')) || [
             { titulo: "Capítulo 1", contenido: localStorage.getItem('iris_main_content') || "" }
         ];
@@ -395,9 +393,38 @@
             lista.innerHTML = '';
             capitulos.forEach((cap, index) => {
                 const li = document.createElement('li');
-                li.textContent = cap.titulo;
+                
+                const spanTexto = document.createElement('span');
+                spanTexto.textContent = cap.titulo;
+                spanTexto.style.flex = '1';
+                spanTexto.style.cursor = 'pointer';
+                spanTexto.onclick = () => seleccionarCapitulo(index);
+                
+                const btnEditar = document.createElement('button');
+                btnEditar.textContent = '✏️';
+                btnEditar.title = 'Editar título';
+                btnEditar.style.background = 'transparent';
+                btnEditar.style.border = 'none';
+                btnEditar.style.cursor = 'pointer';
+                btnEditar.style.fontSize = '0.8rem';
+                btnEditar.style.padding = '2px 6px';
+                btnEditar.onclick = (e) => {
+                    e.stopPropagation();
+                    const nuevoNombre = prompt('Editar título del capítulo:', cap.titulo);
+                    if (nuevoNombre !== null && nuevoNombre.trim() !== '') {
+                        capitulos[index].titulo = nuevoNombre.trim();
+                        guardarEstadoActual();
+                        renderizarCapitulos();
+                        if (index === indiceActivo) {
+                            document.getElementById('currentChapterTitle').textContent = cap.titulo;
+                        }
+                    }
+                };
+
                 if (index === indiceActivo) li.classList.add('active');
-                li.onclick = () => seleccionarCapitulo(index);
+
+                li.appendChild(spanTexto);
+                li.appendChild(btnEditar);
                 lista.appendChild(li);
             });
         }
