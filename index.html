@@ -1,821 +1,177 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>I.R.I.S. — Escritorio de Autor PRO ULTIMATE</title>
-<!-- Librería para exportar a Word (.docx) -->
-<script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
-<style>
-:root {
-  --navy: #1f2038; --navy2: #2a2c4e; --paper: #fcf9f2; --white: #ffffff;
-  --teal: #6b46c1; --teal-dark: #553c9a; --coral: #d97706; --gold: #b7791f;
-  --ink: #2d3748; --muted: #718096; --line: #e2e8f0; --pale: #f3f0ff;
-  --shadow: 0 12px 35px rgba(45,55,72,.07); --card-bg: #ffffff;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I.R.I.S. - Escritorio de Autor</title>
+    <style>
+        :root {
+            --bg-color: #fdfbf7;
+            --text-color: #2c2c2c;
+            --accent-color: #8c6d46;
+            --sidebar-bg: #f4eee1;
+        }
 
-body.dark-theme {
-  --navy: #0f1017; --navy2: #181a26; --paper: #12141c; --white: #1a1d2d;
-  --teal: #9f7aea; --teal-dark: #805ad5; --coral: #f6ad55; --gold: #d69e2e;
-  --ink: #e2e8f0; --muted: #a0aec0; --line: #2d3748; --pale: #1a192b;
-  --shadow: 0 12px 35px rgba(0,0,0,.5); --card-bg: #1a1d2d;
-}
+        body {
+            font-family: 'Georgia', serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-*{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,"Segoe UI",Arial,sans-serif;font-size:14px;transition:background .3s, color .3s}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer}
+        aside {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid #e0d6c3;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
-.app{min-height:100vh;display:grid;grid-template-columns:255px minmax(0,1fr);transition:.3s}
-.app.focus-mode{grid-template-columns:0 minmax(0,1fr)}
-.app.focus-mode .sidebar{display:none}
+        main {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
 
-.sidebar{background:var(--navy);color:#f8f7f1;padding:25px 17px;display:flex;flex-direction:column;gap:28px;min-height:100vh}
-.brand{display:flex;align-items:center;gap:12px;padding:0 8px}
-.logo-box{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#805ad5,#d69e2e);display:grid;place-items:center;color:white;font-family:Georgia,serif;font-size:22px;font-weight:bold;box-shadow:0 6px 18px rgba(128,90,213,.3)}
-.brandname{font-family:Georgia,serif;font-size:21px;letter-spacing:1.5px;color:#fff}
-.brandtag{font-size:9px;color:#d6bcfa;letter-spacing:1px;margin-top:3px;text-transform:uppercase}
+        textarea {
+            width: 100%;
+            height: 60vh;
+            border: 1px solid #e0d6c3;
+            background: transparent;
+            padding: 20px;
+            font-size: 18px;
+            line-height: 1.8;
+            font-family: inherit;
+            color: inherit;
+            resize: none;
+            border-radius: 8px;
+        }
 
-.nav-label{color:#a0aec0;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;padding:0 13px;margin-bottom:8px}
-.nav{display:grid;gap:6px}
-.nav button{display:flex;align-items:center;gap:12px;width:100%;border:0;background:transparent;color:#e2e8f0;padding:12px 13px;border-radius:12px;text-align:left;transition:.18s}
-.nav button:hover{background:rgba(255,255,255,.06)}
-.nav button.active{background:rgba(255,255,255,.12);color:#fff;box-shadow:inset 3px 0 var(--gold)}
-.nav .ico{width:21px;text-align:center;font-size:17px}
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
 
-.sidebar-bottom{margin-top:auto}
-.tip{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:15px;color:#e2e8f0;line-height:1.5}
-.tip strong{display:block;color:#fff;margin:7px 0 4px}
-.tip p{font-size:12px;color:#cbd5e0;margin:0}
+        .controls-bar {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
 
-.main{min-width:0;padding:30px clamp(18px,3vw,42px) 45px}
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:28px}
-.eyebrow{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--teal);font-weight:800}
-.topbar h1{font-size:clamp(25px,3vw,34px);font-weight:650;letter-spacing:-1px;margin:7px 0 5px;color:var(--ink)}
-.subtitle{color:var(--muted);font-size:14px}
-.top-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
 
-.btn{border:1px solid var(--line);background:var(--card-bg);color:var(--ink);padding:10px 14px;border-radius:10px;font-weight:650;transition:.15s}
-.btn:hover{transform:translateY(-1px);box-shadow:0 5px 12px rgba(0,0,0,.08)}
-.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
-.btn.primary:hover{background:var(--teal-dark)}
-.btn.dark{background:var(--navy);border-color:var(--navy);color:white}
-.btn.small{padding:7px 10px;font-size:12px}
-.btn.danger{background:#e53e3e;border-color:#e53e3e;color:white}
+        button:hover {
+            opacity: 0.9;
+        }
 
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:22px;align-items:start}
-.content{min-width:0}
-.panel{background:var(--card-bg);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:22px;margin-bottom:20px}
-.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}
-.panel h2{font-size:16px;margin:0;color:var(--ink)}
-.panel h3{margin:0;color:var(--ink)}
-.muted{color:var(--muted)}
-.tiny{font-size:12px}
+        /* --- MODO ZEN / ENFOQUE TOTAL --- */
+        body.zen-mode aside,
+        body.zen-mode .controls-bar h2 {
+            display: none !important;
+        }
 
-.book-hero{position:relative;overflow:hidden;background:var(--pale);display:grid;grid-template-columns:minmax(0,1fr) 145px;gap:20px;align-items:center}
-.book-title{width:100%;border:0;background:transparent;font-family:Georgia,serif;font-size:clamp(23px,3vw,31px);color:var(--ink);outline:none;padding:2px 0}
-.book-title:focus{border-bottom:1px solid var(--teal)}
-.field-label{font-size:11px;color:var(--muted);font-weight:750;display:block;margin:13px 0 6px}
-.field{width:100%;border:1px solid var(--line);background:var(--card-bg);border-radius:9px;padding:10px 11px;color:var(--ink);outline:none}
-.field:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(107,70,193,.15)}
-.book-desc{resize:vertical;min-height:52px;max-height:140px;line-height:1.5}
+        body.zen-mode main {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px;
+        }
 
-.hero-stat{z-index:1;text-align:center;background:var(--card-bg);border:1px solid var(--line);border-radius:16px;padding:18px 12px}
-.stat-number{font-size:30px;font-weight:750;color:var(--teal);letter-spacing:-1px}
-.stat-caption{font-size:11px;color:var(--muted);margin-top:4px}
+        .zen-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
 
-.chapter-list{display:grid;gap:8px}
-.chapter-row{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card-bg);transition:.15s}
-.chapter-row.selected{border-color:var(--teal);background:var(--pale)}
-.chapter-pick{display:flex;align-items:center;gap:11px;min-width:0;flex:1;background:transparent;border:0;text-align:left;color:var(--ink)}
-.chapter-number{flex:0 0 34px;height:38px;border-radius:10px;display:grid;place-items:center;background:var(--pale);color:var(--muted);font-weight:750}
-.selected .chapter-number{background:var(--teal);color:white}
-.chapter-text{min-width:0}
-.chapter-name{display:block;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chapter-meta{display:block;font-size:11px;color:var(--muted);margin-top:4px}
-.icon-btn{border:0;background:transparent;color:var(--muted);border-radius:8px;padding:7px}
-.icon-btn:hover{background:var(--pale);color:var(--ink)}
-
-.editor-panel{padding:0;overflow:hidden}
-.editor-top{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.crumb{font-size:12px;color:var(--muted)}
-.crumb strong{color:var(--ink)}
-.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.editor-body{padding:clamp(20px,4vw,44px);min-height:420px}
-.chapter-title-input{display:block;width:100%;border:0;background:transparent;font-family:Georgia,"Times New Roman",serif;font-size:clamp(26px,3vw,34px);font-weight:600;color:var(--ink);outline:none;margin-bottom:22px}
-.writing-area{display:block;width:100%;min-height:315px;border:0;outline:none;resize:vertical;background:transparent;color:var(--ink);font-family:Georgia,"Times New Roman",serif;font-size:18px;line-height:1.9}
-.writing-area::placeholder{color:var(--muted)}
-.editor-footer{padding:13px 22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:11px;background:var(--pale)}
-.status-dot{display:inline-block;width:7px;height:7px;background:#48bb78;border-radius:50%;margin-right:6px}
-
-.rightcol .panel{padding:19px}
-.side-heading{display:flex;align-items:center;gap:9px;margin-bottom:15px}
-.side-icon{width:32px;height:32px;display:grid;place-items:center;background:var(--pale);border-radius:10px;font-size:16px}
-.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.metric{background:var(--pale);border-radius:12px;padding:13px}
-.metric strong{display:block;color:var(--ink);font-size:20px}
-.metric span{font-size:11px;color:var(--muted)}
-.note-area{width:100%;min-height:145px;resize:vertical;border:1px solid var(--line);border-radius:10px;background:var(--card-bg);padding:12px;color:var(--ink);line-height:1.6;outline:none}
-
-.character-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));gap:16px}
-.char-card{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--card-bg);display:flex;gap:14px;align-items:flex-start}
-.char-avatar{width:64px;height:64px;border-radius:14px;object-fit:cover;background:var(--pale);flex-shrink:0;border:1px solid var(--line)}
-.char-info{min-width:0;flex:1}
-.char-info strong{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
-.char-info p{font-size:12px;color:var(--muted);line-height:1.5;margin:0;white-space:pre-wrap}
-
-.scene-card{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--card-bg);margin-bottom:12px;box-shadow:0 3px 10px rgba(0,0,0,0.02)}
-.scene-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
-.scene-title{font-weight:700;color:var(--ink);font-size:15px}
-.scene-badge{font-size:11px;padding:3px 8px;border-radius:20px;font-weight:600;text-transform:uppercase}
-.badge-idea{background:#ebf8ff;color:#3182ce}
-.badge-planificada{background:#fefcbf;color:#b7791f}
-.badge-borrador{background:#feebc8;color:#dd6b20}
-.badge-revisar{background:#fed7d7;color:#e53e3e}
-.badge-terminada{background:#c6f6d5;color:#276749}
-.scene-meta{display:flex;gap:12px;font-size:12px;color:var(--muted);margin-bottom:10px;flex-wrap:wrap}
-.scene-body{font-size:13px;line-height:1.5;color:var(--ink);margin-bottom:12px}
-.scene-actions{display:flex;gap:6px;justify-content:flex-end}
-
-.goal-bar-container{background:var(--line);border-radius:8px;height:8px;width:100%;overflow:hidden;margin-top:8px}
-.goal-bar{background:var(--teal);height:100%;width:0%;transition:.3s}
-
-.empty{padding:25px 15px;text-align:center;color:var(--muted);background:var(--pale);border:1px dashed var(--line);border-radius:12px;line-height:1.6}
-.empty .big{font-size:26px;display:block;margin-bottom:8px}
-.hidden{display:none!important}
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--navy);color:white;padding:12px 18px;border-radius:11px;box-shadow:0 12px 30px rgba(0,0,0,.3);z-index:10;opacity:0;pointer-events:none;transition:.2s}
-.toast.show{opacity:1}
-
-@media print {
-  body { background: white !important; color: black !important; }
-  .sidebar, .topbar, .editor-top, .editor-footer, .rightcol, .top-actions, .nav { display: none !important; }
-  .app { display: block !important; }
-  .main { padding: 0 !important; }
-  .panel { border: 0 !important; box-shadow: none !important; padding: 0 !important; }
-  .writing-area { font-family: Georgia, serif !important; font-size: 14pt !important; line-height: 1.6 !important; color: black !important; height: auto !important; }
-}
-</style>
+        .status-backup {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
-<div class="app" id="app-container">
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="logo-box">I</div>
-      <div>
-        <div class="brandname">I.R.I.S.</div>
-        <div class="brandtag">Escritorio de Autor</div>
-      </div>
-    </div>
-    <div>
-      <div class="nav-label">Navegación</div>
-      <nav class="nav">
-        <button id="nav-editor" class="active" onclick="switchTab('editor')"><span class="ico">✍️</span> Editor y Capítulos</button>
-        <button id="nav-organizer" onclick="switchTab('organizer')"><span class="ico">📍</span> Organizador Narrativo</button>
-        <button id="nav-characters" onclick="switchTab('characters')"><span class="ico">👤</span> Personajes y Galería</button>
-        <button id="nav-export" onclick="switchTab('export')"><span class="ico">💾</span> Guardar y Exportar</button>
-      </nav>
-    </div>
-    <div class="sidebar-bottom">
-      <div class="tip">
-        <strong>💡 Diseño y Tipografía</strong>
-        <p>Personaliza fuente, tamaño e interlineado desde la barra superior del editor.</p>
-      </div>
-    </div>
-  </aside>
 
-  <main class="main">
-    <div class="topbar">
-      <div>
-        <div class="eyebrow">Proyecto Activo</div>
-        <h1 id="top-book-title">Proyecto I.R.I.S.</h1>
-        <div class="subtitle" id="top-book-sub">Cargando datos...</div>
-      </div>
-      <div class="top-actions">
-        <button class="btn small" onclick="toggleTheme()">🌙 Tema</button>
-        <button class="btn primary small" onclick="exportWord()">📥 Word (.docx)</button>
-        <button class="btn primary small" onclick="exportPDF()">🖨️ PDF</button>
-        <button class="btn dark small" onclick="exportData()">💾 JSON</button>
-      </div>
-    </div>
+    <button class="zen-btn" onclick="toggleZenMode()">🧘 Modo Zen</button>
 
-    <!-- SECCIÓN 1: EDITOR -->
-    <div id="tab-editor" class="tab-content">
-      <div class="layout">
-        <div class="content">
-          <div class="panel book-hero">
-            <div>
-              <input type="text" id="book-title-input" class="book-title" placeholder="Título de la obra" oninput="updateBookInfo()">
-              <label class="field-label">SINOPSIS GENERAL</label>
-              <textarea id="book-desc-input" class="field book-desc" placeholder="Resumen o sinopsis del libro..." oninput="updateBookInfo()"></textarea>
-            </div>
-            <div class="hero-stat">
-              <div class="stat-number" id="total-words">0</div>
-              <div class="stat-caption">Palabras Totales</div>
-            </div>
-          </div>
-
-          <div class="panel editor-panel" id="main-editor-panel">
-            <div class="editor-top">
-              <div class="crumb">Editando: <strong id="current-chapter-crumb">Capítulo 1</strong></div>
-              <div class="toolbar">
-                <button class="btn small" onclick="openFindReplace()">🔍 Reemplazar</button>
-                <button class="btn small" onclick="toggleFocusMode()">👁️ Enfoque</button>
-                <select id="font-family-select" class="btn small" onchange="changeFontFamily(this.value)">
-                  <option value="Georgia, serif">Georgia</option>
-                  <option value="Inter, sans-serif">Inter</option>
-                  <option value="'Courier New', monospace">Courier</option>
-                </select>
-                <select id="font-size-select" class="btn small" onchange="changeFontSize(this.value)">
-                  <option value="16px">16px</option>
-                  <option value="18px" selected>18px</option>
-                  <option value="20px">20px</option>
-                  <option value="22px">22px</option>
-                </select>
-                <select id="line-height-select" class="btn small" onchange="changeLineHeight(this.value)">
-                  <option value="1.6">Línea normal</option>
-                  <option value="1.9" selected>Línea amplia (1.9)</option>
-                  <option value="2.2">Doble espacio</option>
-                </select>
-                <select id="theme-style-select" class="btn small" onchange="changeReadingTheme(this.value)">
-                  <option value="default">Estándar</option>
-                  <option value="sepia">Pergamino / Sepia</option>
-                  <option value="oled">Noche OLED</option>
-                </select>
-                <button class="btn small primary" onclick="addChapter()">+ Nuevo Capítulo</button>
-              </div>
-            </div>
-            <div class="editor-body">
-              <input type="text" id="chapter-title-input" class="chapter-title-input" placeholder="Título del capítulo..." oninput="saveCurrentChapter()">
-              <textarea id="writing-area" class="writing-area" placeholder="Escribe aquí tu manuscrito..." oninput="saveCurrentChapter()"></textarea>
-            </div>
-            <div class="editor-footer">
-              <div><span class="status-dot"></span><span id="save-status">Guardado automático activo</span></div>
-              <div>Palabras en capítulo: <strong id="chapter-words">0</strong></div>
-            </div>
-          </div>
+    <aside>
+        <h2>I.R.I.S. Autor</h2>
+        <div>
+            <h3>Meta Diaria</h3>
+            <p>Objetivo: 500 palabras</p>
+            <progress id="progress" value="0" max="500" style="width:100%"></progress>
         </div>
-
-        <div class="rightcol">
-          <div class="panel">
-            <div class="side-heading">
-              <div class="side-icon">🎯</div>
-              <h3>Meta Diaria</h3>
-            </div>
-            <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Objetivo: <span id="goal-text">500</span> palabras</div>
-            <input type="number" id="daily-goal-input" class="field" value="500" style="padding:6px 8px;font-size:12px" onchange="updateGoal()">
-            <div class="goal-bar-container">
-              <div class="goal-bar" id="goal-progress-bar"></div>
-            </div>
-          </div>
-
-          <div class="panel">
-            <div class="side-heading">
-              <div class="side-icon">⏱️</div>
-              <h3>Pomodoro de Autor</h3>
-            </div>
-            <div id="timer-display" style="font-size:24px;font-weight:700;color:var(--ink);text-align:center;margin-bottom:10px">25:00</div>
-            <div style="display:flex;gap:6px;justify-content:center">
-              <button class="btn small primary" onclick="startTimer()">Iniciar</button>
-              <button class="btn small" onclick="resetTimer()">Reiniciar</button>
-            </div>
-          </div>
-
-          <div class="panel">
-            <div class="side-heading">
-              <div class="side-icon">📖</div>
-              <h3>Capítulos</h3>
-            </div>
-            <div class="chapter-list" id="chapter-list"></div>
-          </div>
-
-          <div class="panel">
-            <div class="side-heading">
-              <div class="side-icon">📌</div>
-              <h3>Notas Rápidas</h3>
-            </div>
-            <textarea id="quick-notes" class="note-area" placeholder="Notas de trabajo..." oninput="saveNotes()"></textarea>
-          </div>
+        <div>
+            <h3>Capítulos</h3>
+            <ul>
+                <li>Capítulo 1 (Activo)</li>
+            </ul>
         </div>
-      </div>
-    </div>
+        <div class="status-backup" id="backupStatus">Respaldo local: Al día</div>
+    </aside>
 
-    <!-- SECCIÓN 2: ORGANIZADOR NARRATIVO -->
-    <div id="tab-organizer" class="tab-content hidden">
-      <div class="layout">
-        <div class="content">
-          <div class="panel">
-            <div class="panel-head">
-              <h2>📍 Organizador de Escenas y Tramas</h2>
-              <button class="btn primary small" onclick="openSceneModal()">+ Nueva Escena</button>
-            </div>
-            <div id="scene-list"></div>
-          </div>
+    <main>
+        <div class="controls-bar">
+            <h2>Editando: Capítulo 1</h2>
         </div>
-        <div class="rightcol">
-          <div class="panel">
-            <div class="side-heading">
-              <div class="side-icon">📊</div>
-              <h3>Resumen de Escenas</h3>
-            </div>
-            <div class="metric-grid">
-              <div class="metric"><strong id="stat-scenes-count">0</strong><span>Escenas</span></div>
-              <div class="metric"><strong id="stat-done-scenes">0</strong><span>Terminadas</span></div>
-            </div>
-          </div>
+        <textarea id="editor" placeholder="Comienza a escribir tu historia aquí..." oninput="updateEditor()"></textarea>
+        <div>
+            <span id="wordCount">0</span> palabras totales
         </div>
-      </div>
-    </div>
+    </main>
 
-    <!-- SECCIÓN 3: PERSONAJES -->
-    <div id="tab-characters" class="tab-content hidden">
-      <div class="panel">
-        <div class="panel-head">
-          <h2>👤 Galería de Personajes y Escenarios</h2>
-          <button class="btn primary small" onclick="addCharacter()">+ Agregar Personaje</button>
-        </div>
-        <div class="character-grid" id="character-list"></div>
-      </div>
-    </div>
+    <script>
+        const editor = document.getElementById('editor');
+        const wordCount = document.getElementById('wordCount');
+        const progressBar = document.getElementById('progress');
+        const backupStatus = document.getElementById('backupStatus');
 
-    <!-- SECCIÓN 4: RESPALDOS -->
-    <div id="tab-export" class="tab-content hidden">
-      <div class="panel">
-        <h2>💾 Copias de Seguridad y Formatos</h2>
-        <p class="muted">Exporta tu libro completo a Word, PDF o guarda respaldos JSON.</p>
-        <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap">
-          <button class="btn primary" onclick="exportWord()">📥 Descargar en Word (.docx)</button>
-          <button class="btn primary" onclick="exportPDF()">🖨️ Guardar como PDF</button>
-          <button class="btn dark" onclick="exportData()">Descargar Respaldo JSON</button>
-          <label class="btn dark" style="cursor:pointer">
-            Cargar Respaldo JSON <input type="file" id="import-file" style="display:none" onchange="importData(event)">
-          </label>
-        </div>
-      </div>
-    </div>
-  </main>
-</div>
+        // Cargar texto guardado previamente si existe
+        if (localStorage.getItem('iris_current_text')) {
+            editor.value = localStorage.getItem('iris_current_text');
+            updateEditor();
+        }
 
-<div id="toast" class="toast">Notificación</div>
+        function updateEditor() {
+            const text = editor.value.trim();
+            const words = text === '' ? 0 : text.split(/\s+/).length;
+            wordCount.textContent = words;
+            progressBar.value = words;
 
-<script>
-const DEFAULT_DATA = {
-  title: "Proyecto I.R.I.S.",
-  description: "Investigación y desarrollo del proyecto I.R.I.S.",
-  notes: "Revisar escenas del campus.",
-  dailyGoal: 500,
-  chapters: [
-    { id: "chap-1", title: "Capítulo 1: Presentación del Proyecto", content: "Gabriel Santoro acomodó sus anteojos mientras miraba las notas..." }
-  ],
-  characters: [
-    { name: "Gabriel Santoro", desc: "Protagonista principal. Profesor universitario de Historia de 40 años, metódico y observador.", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" },
-    { name: "Caterina", desc: "Hija de Gabriel y su mayor tesoro. Amante de los libros.", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150" },
-    { name: "Laura Méndez", desc: "Coordinación de investigación universitaria.", img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150" },
-    { name: "Elena Valdés", desc: "Especialista en decisiones colectivas y comunicación.", img: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150" }
-  ],
-  scenes: [
-    { title: "Encuentro en la Universidad", summary: "Laura convoca a Gabriel para presentar los avances.", location: "Universidad", characters: "Gabriel, Laura", status: "borrador", chapterId: "chap-1", continuity: "Lleva su carpeta." }
-  ]
-};
+            // Guardado automático en tiempo real
+            localStorage.setItem('iris_current_text', text);
+        }
 
-let appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
-let activeChapterId = "chap-1";
-let timerInterval = null;
-let timeLeft = 1500;
+        // Sistema de respaldo local automático por seguridad (Snapshot cada 2 minutos)
+        setInterval(() => {
+            const text = editor.value;
+            const timestamp = new Date().toLocaleTimeString();
+            localStorage.setItem(`iris_snapshot_${Date.now()}`, text);
+            backupStatus.textContent = `Respaldo local guardado a las ${timestamp}`;
+        }, 120000);
 
-window.addEventListener('DOMContentLoaded', () => {
-  loadStoredData();
-  renderAll();
-  loadPreferences();
-});
-
-function loadStoredData() {
-  try {
-    const saved = localStorage.getItem('IRIS_AUTHOR_DATA_PRO_ULTIMATE');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      appData = { ...appData, ...parsed };
-      if (!appData.chapters || appData.chapters.length === 0) appData.chapters = DEFAULT_DATA.chapters;
-      activeChapterId = appData.chapters[0].id;
-    }
-  } catch(e) { 
-    console.error("Error al cargar datos desde localStorage", e); 
-  }
-}
-
-function loadPreferences() {
-  const font = localStorage.getItem('IRIS_FONT_FAMILY');
-  const size = localStorage.getItem('IRIS_FONT_SIZE');
-  const lh = localStorage.getItem('IRIS_LINE_HEIGHT');
-  const theme = localStorage.getItem('IRIS_READING_THEME');
-
-  if (font) { document.getElementById('writing-area').style.fontFamily = font; document.getElementById('font-family-select').value = font; }
-  if (size) { document.getElementById('writing-area').style.fontSize = size; document.getElementById('font-size-select').value = size; }
-  if (lh) { document.getElementById('writing-area').style.lineHeight = lh; document.getElementById('line-height-select').value = lh; }
-  if (theme) { changeReadingTheme(theme); document.getElementById('theme-style-select').value = theme; }
-}
-
-function saveData() {
-  try {
-    localStorage.setItem('IRIS_AUTHOR_DATA_PRO_ULTIMATE', JSON.stringify(appData));
-    showToast("Guardado automáticamente");
-  } catch(e) {
-    console.error("Error al guardar en localStorage", e);
-  }
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  if (!t) return;
-  t.innerText = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
-}
-
-function switchTab(tab) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-  document.querySelectorAll('.nav button').forEach(el => el.classList.remove('active'));
-  const targetTab = document.getElementById(`tab-${tab}`);
-  const targetNav = document.getElementById(`nav-${tab}`);
-  if (targetTab) targetTab.classList.remove('hidden');
-  if (targetNav) targetNav.classList.add('active');
-}
-
-function toggleTheme() {
-  document.body.classList.toggle('dark-theme');
-}
-
-function toggleFocusMode() {
-  document.getElementById('app-container').classList.toggle('focus-mode');
-}
-
-function changeFontFamily(font) {
-  document.getElementById('writing-area').style.fontFamily = font;
-  localStorage.setItem('IRIS_FONT_FAMILY', font);
-}
-
-function changeFontSize(size) {
-  document.getElementById('writing-area').style.fontSize = size;
-  localStorage.setItem('IRIS_FONT_SIZE', size);
-}
-
-function changeLineHeight(lh) {
-  document.getElementById('writing-area').style.lineHeight = lh;
-  localStorage.setItem('IRIS_LINE_HEIGHT', lh);
-}
-
-function changeReadingTheme(theme) {
-  const area = document.getElementById('main-editor-panel');
-  if (theme === 'sepia') {
-    area.style.background = '#f4ecd8';
-    area.style.color = '#3b2f2f';
-    document.getElementById('writing-area').style.color = '#3b2f2f';
-    document.getElementById('chapter-title-input').style.color = '#3b2f2f';
-  } else if (theme === 'oled') {
-    area.style.background = '#000000';
-    area.style.color = '#e2e8f0';
-    document.getElementById('writing-area').style.color = '#e2e8f0';
-    document.getElementById('chapter-title-input').style.color = '#e2e8f0';
-  } else {
-    area.style.background = '';
-    area.style.color = '';
-    document.getElementById('writing-area').style.color = '';
-    document.getElementById('chapter-title-input').style.color = '';
-  }
-  localStorage.setItem('IRIS_READING_THEME', theme);
-}
-
-function renderAll() {
-  document.getElementById('book-title-input').value = appData.title || "";
-  document.getElementById('book-desc-input').value = appData.description || "";
-  document.getElementById('quick-notes').value = appData.notes || "";
-  document.getElementById('daily-goal-input').value = appData.dailyGoal || 500;
-  document.getElementById('goal-text').innerText = appData.dailyGoal || 500;
-  document.getElementById('top-book-title').innerText = appData.title || "Sin título";
-
-  renderChapters();
-  renderActiveChapter();
-  renderScenes();
-  renderCharacters();
-  updateWordCounts();
-}
-
-function renderChapters() {
-  const list = document.getElementById('chapter-list');
-  if (!list) return;
-  list.innerHTML = "";
-  appData.chapters.forEach((chap, idx) => {
-    const isSelected = chap.id === activeChapterId;
-    const row = document.createElement('div');
-    row.className = `chapter-row ${isSelected ? 'selected' : ''}`;
-    row.innerHTML = `
-      <button class="chapter-pick" onclick="selectChapter('${chap.id}')">
-        <div class="chapter-number">${idx + 1}</div>
-        <div class="chapter-text">
-          <span class="chapter-name">${chap.title || 'Sin título'}</span>
-          <span class="chapter-meta">${countWords(chap.content)} palabras</span>
-        </div>
-      </button>
-      <button class="icon-btn" onclick="deleteChapter('${chap.id}')" title="Eliminar">🗑️</button>
-    `;
-    list.appendChild(row);
-  });
-}
-
-function selectChapter(id) {
-  activeChapterId = id;
-  renderChapters();
-  renderActiveChapter();
-}
-
-function renderActiveChapter() {
-  const chap = appData.chapters.find(c => c.id === activeChapterId);
-  if (!chap) return;
-  document.getElementById('current-chapter-crumb').innerText = chap.title;
-  document.getElementById('chapter-title-input').value = chap.title;
-  document.getElementById('writing-area').value = chap.content;
-  document.getElementById('chapter-words').innerText = countWords(chap.content);
-}
-
-function saveCurrentChapter() {
-  const chap = appData.chapters.find(c => c.id === activeChapterId);
-  if (!chap) return;
-  chap.title = document.getElementById('chapter-title-input').value;
-  chap.content = document.getElementById('writing-area').value;
-  document.getElementById('chapter-words').innerText = countWords(chap.content);
-  updateWordCounts();
-  saveData();
-  renderChapters();
-}
-
-function addChapter() {
-  const newId = "chap-" + Date.now();
-  appData.chapters.push({ id: newId, title: `Capítulo ${appData.chapters.length + 1}`, content: "" });
-  activeChapterId = newId;
-  saveData();
-  renderAll();
-}
-
-function deleteChapter(id) {
-  if (appData.chapters.length <= 1) {
-    alert("Debes conservar al menos un capítulo.");
-    return;
-  }
-  if (confirm("¿Eliminar este capítulo?")) {
-    appData.chapters = appData.chapters.filter(c => c.id !== id);
-    activeChapterId = appData.chapters[0].id;
-    saveData();
-    renderAll();
-  }
-}
-
-function openFindReplace() {
-  const searchStr = prompt("¿Qué palabra o frase deseas buscar?");
-  if (!searchStr) return;
-  const replaceStr = prompt(`Reemplazar "${searchStr}" por:`);
-  if (replaceStr === null) return;
-
-  let totalReplacements = 0;
-  const regex = new RegExp(searchStr, "gi");
-
-  appData.chapters.forEach(chap => {
-    if (chap.content) {
-      const matches = (chap.content.match(regex) || []).length;
-      if (matches > 0) {
-        chap.content = chap.content.replace(regex, replaceStr);
-        totalReplacements += matches;
-      }
-    }
-  });
-
-  if (totalReplacements > 0) {
-    saveData();
-    renderAll();
-    alert(`¡Éxito! Se realizaron ${totalReplacements} reemplazos en toda la obra.`);
-  } else {
-    alert(`No se encontró la palabra "${searchStr}" en ningún capítulo.`);
-  }
-}
-
-function updateBookInfo() {
-  appData.title = document.getElementById('book-title-input').value;
-  appData.description = document.getElementById('book-desc-input').value;
-  document.getElementById('top-book-title').innerText = appData.title || "Sin título";
-  saveData();
-}
-
-function saveNotes() {
-  appData.notes = document.getElementById('quick-notes').value;
-  saveData();
-}
-
-function updateGoal() {
-  appData.dailyGoal = parseInt(document.getElementById('daily-goal-input').value) || 500;
-  document.getElementById('goal-text').innerText = appData.dailyGoal;
-  updateWordCounts();
-  saveData();
-}
-
-function countWords(str) {
-  if (!str) return 0;
-  return str.trim().split(/\s+/).filter(w => w.length > 0).length;
-}
-
-function updateWordCounts() {
-  let total = 0;
-  appData.chapters.forEach(c => total += countWords(c.content));
-  document.getElementById('total-words').innerText = total;
-  document.getElementById('top-book-sub').innerText = `${appData.chapters.length} Capítulos | ${total} Palabras totales`;
-
-  const goal = appData.dailyGoal || 500;
-  const pct = Math.min(100, Math.round((total / goal) * 100));
-  const progressBar = document.getElementById('goal-progress-bar');
-  if (progressBar) progressBar.style.width = pct + '%';
-}
-
-function startTimer() {
-  if (timerInterval) return;
-  timerInterval = setInterval(() => {
-    timeLeft--;
-    let m = Math.floor(timeLeft / 60);
-    let s = timeLeft % 60;
-    document.getElementById('timer-display').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      alert("¡Tiempo de descanso!");
-    }
-  }, 1000);
-}
-
-function resetTimer() {
-  clearInterval(timerInterval);
-  timerInterval = null;
-  timeLeft = 1500;
-  document.getElementById('timer-display').innerText = "25:00";
-}
-
-function renderScenes() {
-  const list = document.getElementById('scene-list');
-  if (!list) return;
-  list.innerHTML = "";
-  if (!appData.scenes || appData.scenes.length === 0) {
-    list.innerHTML = `<div class="empty"><span class="big">📍</span><p>No hay escenas registradas.</p></div>`;
-    document.getElementById('stat-scenes-count').innerText = 0;
-    document.getElementById('stat-done-scenes').innerText = 0;
-    return;
-  }
-  let done = 0;
-  appData.scenes.forEach((sc, idx) => {
-    if (sc.status === 'terminada') done++;
-    const chap = appData.chapters.find(c => c.id === sc.chapterId);
-    const card = document.createElement('div');
-    card.className = "scene-card";
-    card.innerHTML = `
-      <div class="scene-header">
-        <span class="scene-title">${idx + 1}. ${sc.title}</span>
-        <span class="scene-badge badge-${sc.status || 'idea'}">${sc.status || 'idea'}</span>
-      </div>
-      <div class="scene-meta">
-        <span>📖 ${chap ? chap.title : 'Sin capítulo'}</span>
-        ${sc.location ? `<span>📍 ${sc.location}</span>` : ''}
-      </div>
-      <div class="scene-body">${sc.summary}</div>
-      <div class="scene-actions">
-        <button class="btn small" onclick="moveScene(${idx}, -1)">⬆️</button>
-        <button class="btn small" onclick="moveScene(${idx}, 1)">⬇️</button>
-        <button class="btn small" onclick="editScene(${idx})">✏️</button>
-        <button class="btn small danger" onclick="deleteScene(${idx})">🗑️</button>
-      </div>
-    `;
-    list.appendChild(card);
-  });
-  document.getElementById('stat-scenes-count').innerText = appData.scenes.length;
-  document.getElementById('stat-done-scenes').innerText = done;
-}
-
-function openSceneModal(editIdx = null) {
-  const isEdit = editIdx !== null;
-  const sc = isEdit ? appData.scenes[editIdx] : { title: '', summary: '', chapterId: activeChapterId, status: 'idea', location: '', characters: '' };
-  const title = prompt("Título de la escena:", sc.title);
-  if (title === null) return;
-  const summary = prompt("¿Qué sucede?", sc.summary);
-  const location = prompt("Lugar:", sc.location);
-  const status = prompt("Estado (idea / planificada / borrador / revisar / terminada):", sc.status);
-
-  const newScene = { title, summary, location, status: (status || 'idea').toLowerCase(), chapterId: sc.chapterId || activeChapterId };
-  if (isEdit) appData.scenes[editIdx] = newScene;
-  else appData.scenes.push(newScene);
-  saveData();
-  renderScenes();
-}
-
-function editScene(idx) { openSceneModal(idx); }
-
-function moveScene(idx, dir) {
-  const n = idx + dir;
-  if (n < 0 || n >= appData.scenes.length) return;
-  const t = appData.scenes[idx];
-  appData.scenes[idx] = appData.scenes[n];
-  appData.scenes[n] = t;
-  saveData();
-  renderScenes();
-}
-
-function deleteScene(idx) {
-  if (confirm("¿Eliminar escena?")) {
-    appData.scenes.splice(idx, 1);
-    saveData();
-    renderScenes();
-  }
-}
-
-function renderCharacters() {
-  const list = document.getElementById('character-list');
-  if (!list) return;
-  list.innerHTML = "";
-  appData.characters.forEach((char, idx) => {
-    const card = document.createElement('div');
-    card.className = "char-card";
-    card.innerHTML = `
-      <img src="${char.img || 'https://via.placeholder.com/150'}" class="char-avatar" alt="${char.name}">
-      <div class="char-info">
-        <strong>${char.name}</strong>
-        <p>${char.desc}</p>
-        <button class="btn small danger" style="margin-top:8px" onclick="deleteCharacter(${idx})">Eliminar</button>
-      </div>
-    `;
-    list.appendChild(card);
-  });
-}
-
-function addCharacter() {
-  const name = prompt("Nombre del personaje:");
-  if (!name) return;
-  const desc = prompt("Descripción:");
-  const img = prompt("URL de la imagen de perfil (opcional):");
-  appData.characters.push({ name, desc: desc || "", img: img || "" });
-  saveData();
-  renderCharacters();
-}
-
-function deleteCharacter(idx) {
-  if (confirm("¿Eliminar personaje?")) {
-    appData.characters.splice(idx, 1);
-    saveData();
-    renderCharacters();
-  }
-}
-
-function exportWord() {
-  if (typeof htmlDocx === 'undefined') {
-    alert("Cargando módulo de Word... Por favor intenta en unos segundos.");
-    return;
-  }
-  let htmlContent = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${appData.title}</title></head><body style="font-family:Arial, sans-serif; line-height: 1.6;">`;
-  htmlContent += `<h1 style="text-align:center; color:#1f2038;">${appData.title}</h1>`;
-  htmlContent += `<p style="text-align:center; font-style:italic; color:#555;">Sinopsis: ${appData.description}</p><br><hr><br>`;
-  
-  appData.chapters.forEach((c, idx) => {
-    htmlContent += `<h2 style="color:#1f2038;">Capítulo ${idx + 1}: ${c.title}</h2>`;
-    let formattedText = (c.content || "").replace(/\n/g, '<br>');
-    htmlContent += `<p>${formattedText}</p><br><br>`;
-  });
-  htmlContent += `</body></html>`;
-
-  const converted = htmlDocx.asBlob(htmlContent);
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(converted);
-  link.download = `${appData.title || 'Libro'}.docx`;
-  link.click();
-  showToast("¡Libro exportado a Word con éxito!");
-}
-
-function exportPDF() {
-  window.print();
-}
-
-function exportData() {
-  const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `${appData.title}_Backup.json`;
-  a.click();
-}
-
-function importData(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    try {
-      appData = JSON.parse(evt.target.result);
-      saveData();
-      renderAll();
-      showToast("Datos restaurados");
-    } catch(err) { alert("Error al importar el archivo JSON"); }
-  };
-  reader.readAsText(file);
-}
-</script>
+        // Alternar Modo Zen
+        function toggleZenMode() {
+            document.body.classList.toggle('zen-mode');
+            const btn = document.querySelector('.zen-btn');
+            btn.textContent = document.body.classList.contains('zen-mode') ? '✖ Salir de Zen' : '🧘 Modo Zen';
+        }
+    </script>
 </body>
 </html>
