@@ -1,227 +1,194 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>I.R.I.S. - Escritorio de Autor Pro</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Georgia', serif; display: flex; height: 100vh; background-color: #fdfbf7; color: #2c2c2c; }
-    
-    /* Modo Zen */
-    body.modo-zen .sidebar, 
-    body.modo-zen .top-bar, 
-    body.modo-zen .footer-stats { display: none !important; }
-    body.modo-zen .main-content { padding: 40px; }
-    body.modo-zen textarea { border: none; box-shadow: none; }
-
-    /* Barra Lateral */
-    .sidebar { width: 300px; background-color: #f5f0eb; border-right: 1px solid #e2dacd; display: flex; flex-direction: column; padding: 20px; flex-shrink: 0; }
-    .sidebar h2 { font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; color: #6b5e51; margin-bottom: 15px; border-bottom: 1px solid #e2dacd; padding-bottom: 8px; font-family: sans-serif; }
-    
-    .btn-nuevo { background-color: #8c6d46; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 15px; width: 100%; font-family: sans-serif; transition: background 0.2s; }
-    .btn-nuevo:hover { background-color: #735735; }
-    
-    .lista-capitulos { list-style: none; overflow-y: auto; flex-grow: 1; }
-    .item-capitulo { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 6px; cursor: pointer; margin-bottom: 6px; background-color: #eae1d5; transition: all 0.2s; color: #3d352e; }
-    .item-capitulo:hover { background-color: #dfcfb9; }
-    .item-capitulo.activo { background-color: #8c6d46; color: white; }
-    .titulo-cap { flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.95rem; font-family: serif; }
-    
-    .acciones-cap { display: flex; gap: 4px; opacity: 0.7; }
-    .item-capitulo:hover .acciones-cap { opacity: 1; }
-    .btn-accion { background: none; border: none; cursor: pointer; font-size: 0.85rem; padding: 2px 4px; border-radius: 4px; }
-    .btn-accion:hover { background-color: rgba(0,0,0,0.15); }
-    .item-capitulo.activo .btn-accion { color: white; }
-    
-    /* Área Principal */
-    .main-content { flex-grow: 1; display: flex; flex-direction: column; padding: 25px 40px; overflow-y: auto; background-color: #fdfbf7; }
-    
-    .top-bar { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-    .btn-herramienta { background-color: #f0e8dd; border: 1px solid #d9cdbd; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-family: sans-serif; color: #4a4035; transition: all 0.2s; }
-    .btn-herramienta:hover { background-color: #e2d5c3; }
-    .btn-zen { background-color: #5a4b3c; color: white; border: none; }
-    .btn-zen:hover { background-color: #42362b; }
-
-    .editor-container { flex-grow: 1; display: flex; flex-direction: column; max-width: 850px; width: 100%; margin: 0 auto; }
-    
-    .input-titulo { font-size: 2rem; font-weight: bold; border: none; background: transparent; outline: none; width: 100%; margin-bottom: 20px; font-family: 'Georgia', serif; color: #1a1a1a; }
-    
-    textarea { width: 100%; flex-grow: 1; min-height: 450px; border: 1px solid #e6ded3; border-radius: 8px; padding: 25px; font-size: 1.15rem; line-height: 1.7; font-family: 'Georgia', serif; background-color: #ffffff; resize: none; outline: none; color: #2c2c2c; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
-    
-    .footer-stats { display: flex; justify-content: space-between; max-width: 850px; width: 100%; margin: 15px auto 0; font-size: 0.85rem; color: #7a7265; font-family: sans-serif; }
-  </style>
-</head>
-<body>
-
-  <!-- BARRA LATERAL -->
-  <div class="sidebar">
-    <h2>📖 Capítulos</h2>
-    <button class="btn-nuevo" onclick="crearCapitulo()">+ Nuevo Capítulo</button>
-    <ul class="lista-capitulos" id="listaCapitulos"></ul>
-  </div>
-
-  <!-- ÁREA DE ESCRITURA -->
-  <div class="main-content">
-    <div class="top-bar">
-      <button class="btn-herramienta" onclick="togglePantallaCompleta()">📺 Pantalla Completa</button>
-      <button class="btn-herramienta" onclick="exportarPDF()">📕 Exportar PDF / Imprimir</button>
-      <button class="btn-herramienta" onclick="exportarTexto()">📥 Exportar (.txt)</button>
-      <button class="btn-herramienta btn-zen" onclick="toggleModoZen()">🧘 Modo Zen</button>
-    </div>
-
-    <div class="editor-container">
-      <input type="text" id="tituloCapitulo" class="input-titulo" placeholder="Título del capítulo..." oninput="actualizarCapituloActual()">
-      <textarea id="contenidoCapitulo" placeholder="Escribe tu historia aquí..." oninput="actualizarCapituloActual()"></textarea>
-      
-      <div class="footer-stats">
-        <span id="contadorTexto">Palabras: 0 | Caracteres: 0 | Lectura est.: 0 min</span>
-        <span>Guardado automático activo</span>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // Inicializar capítulos
-    let capitulos = JSON.parse(localStorage.getItem('iris_capitulos_pro')) || [
-      { titulo: "Capítulo 1: El Comienzo", contenido: "Gabriel apaguó la computadora y se quedó un momento sentado a oscuras..." }
-    ];
-    let indiceActivo = 0;
-
-    function iniciarApp() {
-      if (!capitulos || capitulos.length === 0) {
-        capitulos = [{ titulo: "Capítulo 1: El Comienzo", contenido: "" }];
-      }
-      renderizarLista();
-      cargarCapitulo(0);
-    }
-
-    function renderizarLista() {
-      const lista = document.getElementById('listaCapitulos');
-      lista.innerHTML = '';
-
-      capitulos.forEach((cap, index) => {
-        const li = document.createElement('li');
-        li.className = `item-capitulo ${index === indiceActivo ? 'activo' : ''}`;
-        li.onclick = () => cargarCapitulo(index);
-
-        li.innerHTML = `
-          <span class="titulo-cap">${cap.titulo || 'Sin título'}</span>
-          <div class="acciones-cap">
-            <button class="btn-accion" title="Renombrar" onclick="renombrarCapitulo(event, ${index})">✏️</button>
-            <button class="btn-accion" title="Eliminar" onclick="eliminarCapitulo(event, ${index})">🗑️</button>
-          </div>
-        `;
-        lista.appendChild(li);
-      });
-    }
-
-    function cargarCapitulo(index) {
-      if (index < 0 || index >= capitulos.length) return;
-      indiceActivo = index;
-      
-      document.getElementById('tituloCapitulo').value = capitulos[index].titulo;
-      document.getElementById('contenidoCapitulo').value = capitulos[index].contenido;
-      
-      renderizarLista();
-      actualizarEstadisticas();
-    }
-
-    function actualizarCapituloActual() {
-      const tituloInput = document.getElementById('tituloCapitulo').value;
-      const contenidoInput = document.getElementById('contenidoCapitulo').value;
-
-      capitulos[indiceActivo].titulo = tituloInput;
-      capitulos[indiceActivo].contenido = contenidoInput;
-
-      guardarCambios();
-      renderizarLista();
-      actualizarEstadisticas();
-    }
-
-    function crearCapitulo() {
-      const nuevoNum = capitulos.length + 1;
-      capitulos.push({ titulo: `Capítulo ${nuevoNum}`, contenido: "" });
-      guardarCambios();
-      cargarCapitulo(capitulos.length - 1);
-    }
-
-    function renombrarCapitulo(e, index) {
-      e.stopPropagation();
-      const nuevoNombre = prompt("Nuevo título para este capítulo:", capitulos[index].titulo);
-      if (nuevoNombre !== null && nuevoNombre.trim() !== "") {
-        capitulos[index].titulo = nuevoNombre.trim();
-        guardarCambios();
-        if (index === indiceActivo) {
-          document.getElementById('tituloCapitulo').value = capitulos[index].titulo;
-        }
-        renderizarLista();
-      }
-    }
-
-    function eliminarCapitulo(e, index) {
-      e.stopPropagation();
-      if (capitulos.length <= 1) {
-        alert("Debes mantener al menos un capítulo en tu obra.");
-        return;
-      }
-
-      if (confirm(`¿Borrar "${capitulos[index].titulo}"?`)) {
-        capitulos.splice(index, 1);
-        if (indiceActivo >= capitulos.length) {
-          indiceActivo = capitulos.length - 1;
-        }
-        guardarCambios();
-        cargarCapitulo(indiceActivo);
-      }
-    }
-
-    function guardarCambios() {
-      localStorage.setItem('iris_capitulos_pro', JSON.stringify(capitulos));
-    }
-
-    function actualizarEstadisticas() {
-      const texto = document.getElementById('contenidoCapitulo').value;
-      const palabras = texto.trim() ? texto.trim().split(/\s+/).length : 0;
-      const caracteres = texto.length;
-      const tiempoLectura = Math.ceil(palabras / 200);
-
-      document.getElementById('contadorTexto').innerText = 
-        `Palabras: ${palabras} | Caracteres: ${caracteres} | Lectura est.: ${tiempoLectura} min`;
-    }
-
-    /* Funciones de botones superiores */
-    function toggleModoZen() {
-      document.body.classList.toggle('modo-zen');
-    }
-
-    function togglePantallaCompleta() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(err => alert("Error al activar pantalla completa"));
-      } else {
-        document.exitFullscreen();
-      }
-    }
-
-    function exportarPDF() {
-      window.print();
-    }
-
-    function exportarTexto() {
-      let textoCompleto = "";
-      capitulos.forEach(cap => {
-        textoCompleto += `=== ${cap.titulo} ===\n\n${cap.contenido}\n\n\n`;
-      });
-
-      const blob = new Blob([textoCompleto], { type: 'text/plain;charset=utf-8' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `Manuscrito_IRIS.txt`;
-      a.click();
-    }
-
-    // Iniciar aplicación
-    iniciarApp();
-  </script>
-</body>
-</html>
+Commits on Oct 12, 2026
+Update index.html
+Lalo2100
+Lalo2100
+authored
+3 minutes ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+11 minutes ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+17 minutes ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+23 minutes ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+1 hour ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+2 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+2 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+2 hours ago
+·
+Verified
+Commits on Oct 11, 2026
+Update index.html
+Lalo2100
+Lalo2100
+authored
+2 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+2 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+2 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+6 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+7 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+8 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+8 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+8 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+8 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+8 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+9 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+9 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+9 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+9 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+9 hours ago
+·
+Verified
+Update index.html
+Lalo2100
+Lalo2100
+authored
+9 hours ago
+·
+Verified
+Commits on Oct 10, 2026
+Update index.html
+Lalo2100
+Lalo2100
+authored
+yesterday
+·
+Verified
+Add files via upload
+Lalo2100
+Lalo2100
+authored
+2 days ago
+·
+Verified
+End of commit history for this file
+Footer
+© 2026 GitHub, Inc.
+Footer navigation
+Terms
+Privacy
+Security
+Status
+Community
