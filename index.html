@@ -153,6 +153,13 @@
             font-weight: bold;
         }
 
+        button.publish-btn {
+            background-color: #2b7fff;
+            color: white;
+            border: none;
+            font-weight: bold;
+        }
+
         button:hover {
             opacity: 0.92;
         }
@@ -235,6 +242,42 @@
             font-size: 0.85rem;
             font-weight: bold;
             box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: var(--panel-bg);
+            min-width: 220px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .dropdown-content button {
+            width: 100%;
+            text-align: left;
+            border: none;
+            border-radius: 0;
+            padding: 10px 14px;
+            background: transparent;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dropdown-content button:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
         }
 
         @media print {
@@ -333,10 +376,19 @@
     <main>
         <header class="top-bar">
             <h2 id="currentChapterTitle" style="margin: 0;">Capítulo 1</h2>
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: 10px; align-items: center;">
                 <button onclick="toggleFullScreen()">📺 Pantalla Completa</button>
                 <button onclick="window.print()">📕 Exportar PDF / Imprimir</button>
                 <button onclick="exportText()">📥 Exportar (.txt)</button>
+                
+                <div class="dropdown">
+                    <button class="publish-btn">🚀 Publicar ▾</button>
+                    <div class="dropdown-content">
+                        <button onclick="publicarVistaLectura()">📖 Vista Lectura Pública</button>
+                        <button onclick="publicarPorEmail()">✉️ Enviar a Editor / Beta Reader</button>
+                        <button onclick="compilarLibroCompleto()">📚 Compilar Libro Completo (.txt)</button>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -539,6 +591,55 @@
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = `${document.getElementById('currentChapterTitle').textContent}.txt`;
+            link.click();
+        }
+
+        // FUNCIONES DE PUBLICACIÓN //
+
+        function publicarVistaLectura() {
+            guardarEstadoActual();
+            const ventanaLectura = window.open('', '_blank');
+            let htmlContenido = `
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Lectura: ${capitulos[indiceActivo].titulo}</title>
+                    <style>
+                        body { font-family: 'Georgia', serif; background: #fdfbf7; color: #2c2c2c; max-width: 750px; margin: 0 auto; padding: 50px 20px; line-height: 1.8; font-size: 1.2rem; }
+                        h1 { text-align: center; color: #8c6d46; margin-bottom: 40px; }
+                        p { white-space: pre-wrap; word-wrap: break-word; }
+                        .footer { text-align: center; font-size: 0.8rem; opacity: 0.5; margin-top: 60px; border-top: 1px solid #e0d6c3; padding-top: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>${capitulos[indiceActivo].titulo}</h1>
+                    <p>${capitulos[indiceActivo].contenido}</p>
+                    <div class="footer">Publicado desde I.R.I.S. - Escritorio de Autor</div>
+                </body>
+                </html>
+            `;
+            ventanaLectura.document.write(htmlContenido);
+            ventanaLectura.document.close();
+        }
+
+        function publicarPorEmail() {
+            guardarEstadoActual();
+            const titulo = encodeURIComponent(`Manuscrito - ${capitulos[indiceActivo].titulo}`);
+            const cuerpo = encodeURIComponent(`Capítulo: ${capitulos[indiceActivo].titulo}\n\n${capitulos[indiceActivo].contenido}`);
+            window.location.href = `mailto:?subject=${titulo}&body=${cuerpo}`;
+        }
+
+        function compilarLibroCompleto() {
+            guardarEstadoActual();
+            let libroCompleto = `=====================================\nI.R.I.S. - MANUSCRITO COMPLETO\n=====================================\n\n`;
+            capitulos.forEach((cap, i) => {
+                libroCompleto += `-------------------------------------\n${cap.titulo}\n-------------------------------------\n\n${cap.contenido}\n\n\n`;
+            });
+            const blob = new Blob([libroCompleto], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Manuscrito_Completo_IRIS.txt`;
             link.click();
         }
     </script>
