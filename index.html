@@ -16,7 +16,6 @@
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
         }
 
-        /* TEMAS VISUALES */
         body.theme-oled {
             --bg-color: #0d0d0d;
             --text-color: #e2e2e2;
@@ -60,7 +59,6 @@
             overflow: hidden;
         }
 
-        /* BARRA LATERAL */
         aside {
             width: 330px;
             background-color: var(--sidebar-bg);
@@ -75,15 +73,23 @@
         .brand-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 5px;
+        }
+
+        .brand-header svg {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
         }
 
         .brand-title {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             margin: 0;
             color: var(--accent-color);
             font-weight: 700;
             letter-spacing: 1px;
+            line-height: 1;
         }
 
         .panel-box {
@@ -96,7 +102,7 @@
 
         .panel-box h3 {
             margin-top: 0;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 8px;
             text-transform: uppercase;
@@ -104,7 +110,6 @@
             opacity: 0.9;
         }
 
-        /* LISTAS */
         ul.item-list {
             list-style: none;
             padding: 0;
@@ -131,7 +136,6 @@
             color: white;
         }
 
-        /* CONTROLES Y BOTONES */
         select, button, input[type="text"] {
             background-color: var(--panel-bg);
             color: var(--text-color);
@@ -154,7 +158,6 @@
             opacity: 0.92;
         }
 
-        /* ÁREA PRINCIPAL */
         main {
             flex: 1;
             padding: 30px 50px;
@@ -206,7 +209,6 @@
             padding: 4px 0;
         }
 
-        /* MODO ZEN */
         body.zen-mode aside,
         body.zen-mode header.top-bar,
         body.zen-mode .status-bar {
@@ -235,6 +237,22 @@
             font-weight: bold;
             box-shadow: 0 4px 12px rgba(0,0,0,0.18);
         }
+
+        @media print {
+            aside, header.top-bar, .status-bar, .zen-toggle-btn {
+                display: none !important;
+            }
+            main {
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+            }
+            textarea#editor {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -243,11 +261,18 @@
 
     <aside>
         <div class="brand-header">
-            <h1 class="brand-title">I.R.I.S.</h1>
-            <span style="font-size: 0.75rem; opacity: 0.7; font-weight: bold;">v2.0 Pro</span>
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="50" r="45" stroke="var(--accent-color)" stroke-width="6"/>
+                <path d="M35 65 C40 45, 55 35, 70 30 C55 45, 45 55, 35 65 Z" fill="var(--accent-color)"/>
+                <path d="M30 70 L35 65 M30 70 L38 68" stroke="var(--accent-color)" stroke-width="4" stroke-linecap="round"/>
+                <path d="M50 35 C60 35, 70 40, 75 50 C70 52, 60 48, 50 45 Z" fill="var(--accent-color)" opacity="0.7"/>
+            </svg>
+            <div>
+                <h1 class="brand-title">I.R.I.S.</h1>
+                <span style="font-size: 0.75rem; opacity: 0.75;">Escritorio de Autor</span>
+            </div>
         </div>
 
-        <!-- Personalización Visual -->
         <div class="panel-box">
             <h3>🎨 Apariencia</h3>
             <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -266,24 +291,25 @@
                     <option value="'Courier New', monospace">Courier New (Retro)</option>
                     <option value="'Arial', sans-serif">Arial Clean</option>
                 </select>
+
+                <label style="font-size: 0.85rem; display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 4px;">
+                    <input type="checkbox" id="soundToggle"> 🔊 Sonido de teclado
+                </label>
             </div>
         </div>
 
-        <!-- Meta Diaria de Escritura -->
         <div class="panel-box">
             <h3>📊 Objetivo Diario</h3>
             <p style="margin: 5px 0; font-size: 0.9rem;">Meta: <span id="goalTarget">500</span> palabras</p>
             <progress id="progressBar" value="0" max="500" style="width: 100%; height: 10px; border-radius: 5px;"></progress>
         </div>
 
-        <!-- Inspiración / Bloqueo Creativo -->
         <div class="panel-box">
             <h3>💡 Inspiración Rápida</h3>
-            <p id="ideaDisplay" style="font-size: 0.85rem; font-style: italic; min-height: 36px; margin-top: 5px;">¿Bloqueado? Genera un nombre o premisa.</p>
+            <p id="ideaDisplay" style="font-size: 0.85rem; font-style: italic; min-height: 36px; margin-top: 5px;">¿Bloqueado? Genera una idea.</p>
             <button onclick="generateIdea()" style="width: 100%; font-size: 0.8rem;">🎲 Generar Idea</button>
         </div>
 
-        <!-- Capítulos -->
         <div class="panel-box">
             <h3>📖 Capítulos</h3>
             <ul class="item-list" id="chapterList">
@@ -293,7 +319,6 @@
             <button onclick="addChapter()" class="primary-btn" style="width: 100%; margin-top: 6px;">+ Agregar Capítulo</button>
         </div>
 
-        <!-- Personajes -->
         <div class="panel-box">
             <h3>👤 Personajes</h3>
             <ul class="item-list" id="characterList">
@@ -312,6 +337,8 @@
         <header class="top-bar">
             <h2 id="currentChapterTitle" style="margin: 0;">Capítulo 1: El Comienzo</h2>
             <div style="display: flex; gap: 10px;">
+                <button onclick="toggleFullScreen()">📺 Pantalla Completa</button>
+                <button onclick="window.print()">📕 Exportar PDF / Imprimir</button>
                 <button onclick="exportText()">📥 Exportar (.txt)</button>
             </div>
         </header>
@@ -324,7 +351,7 @@
             <div>
                 Palabras: <strong id="wordCount">0</strong> | 
                 Caracteres: <span id="charCount">0</span> | 
-                Tiempo de lectura est.: <span id="readTime">0 min</span>
+                Lectura est.: <span id="readTime">0 min</span>
             </div>
             <div id="saveIndicator">Guardado automático activo</div>
         </footer>
@@ -337,8 +364,23 @@
         const readTime = document.getElementById('readTime');
         const progressBar = document.getElementById('progressBar');
         const backupStatus = document.getElementById('backupStatus');
+        const soundToggle = document.getElementById('soundToggle');
 
-        // Cargar contenido guardado previamente
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playTypewriterSound() {
+            if (!soundToggle.checked) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(120 + Math.random() * 80, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.04);
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             const savedText = localStorage.getItem('iris_main_content');
             if (savedText) {
@@ -348,6 +390,7 @@
         });
 
         function onEditorInput() {
+            playTypewriterSound();
             const text = editor.value;
             const trimmed = text.trim();
             const words = trimmed === '' ? 0 : trimmed.split(/\s+/).length;
@@ -356,15 +399,12 @@
             charCount.textContent = text.length;
             progressBar.value = words;
 
-            // Estimación de tiempo de lectura (promedio 200 palabras por minuto)
             const minutes = Math.ceil(words / 200);
             readTime.textContent = `${words === 0 ? 0 : minutes} min`;
 
-            // Guardado automático inmediato en LocalStorage
             localStorage.setItem('iris_main_content', text);
         }
 
-        // Respaldo Local de Seguridad (Snapshot automático cada 2 minutos)
         setInterval(() => {
             const text = editor.value;
             if (text.trim() !== "") {
@@ -374,14 +414,22 @@
             }
         }, 120000);
 
-        // Modo Zen
         function toggleZenMode() {
             document.body.classList.toggle('zen-mode');
             const btn = document.querySelector('.zen-toggle-btn');
             btn.textContent = document.body.classList.contains('zen-mode') ? '✖ Salir de Zen' : '🧘 Modo Zen';
         }
 
-        // Cambiar Temas y Fuentes
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
         function changeTheme(theme) {
             document.body.className = '';
             if (theme !== 'default') {
@@ -393,7 +441,6 @@
             document.documentElement.style.setProperty('--font-family', font);
         }
 
-        // Generador de Ideas Creativas
         const names = ["Aurelio Rossi", "Elena Vance", "Dante Moretti", "Valeria Frost", "Soren Kael"];
         const prompts = [
             "Un secreto guardado en una carta sin enviar.",
@@ -413,7 +460,6 @@
             }
         }
 
-        // Capítulos y Personajes
         function addChapter() {
             const input = document.getElementById('newChapterInput');
             if (input.value.trim() !== "") {
@@ -439,7 +485,6 @@
             }
         }
 
-        // Exportar texto a archivo plano
         function exportText() {
             const blob = new Blob([editor.value], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
