@@ -312,9 +312,7 @@
 
         <div class="panel-box">
             <h3>📖 Capítulos</h3>
-            <ul class="item-list" id="chapterList">
-                <li class="active">Capítulo 1: El Comienzo</li>
-            </ul>
+            <ul class="item-list" id="chapterList"></ul>
             <input type="text" id="newChapterInput" placeholder="Nuevo capítulo..." style="width: 100%; margin-top: 8px;">
             <button onclick="addChapter()" class="primary-btn" style="width: 100%; margin-top: 6px;">+ Agregar Capítulo</button>
         </div>
@@ -335,7 +333,7 @@
 
     <main>
         <header class="top-bar">
-            <h2 id="currentChapterTitle" style="margin: 0;">Capítulo 1: El Comienzo</h2>
+            <h2 id="currentChapterTitle" style="margin: 0;">Capítulo 1</h2>
             <div style="display: flex; gap: 10px;">
                 <button onclick="toggleFullScreen()">📺 Pantalla Completa</button>
                 <button onclick="window.print()">📕 Exportar PDF / Imprimir</button>
@@ -366,6 +364,12 @@
         const backupStatus = document.getElementById('backupStatus');
         const soundToggle = document.getElementById('soundToggle');
 
+        // Estructura de capítulos respaldada en localStorage
+        let capitulos = JSON.parse(localStorage.getItem('iris_capitulos_data')) || [
+            { titulo: "Capítulo 1", contenido: localStorage.getItem('iris_main_content') || "" }
+        ];
+        let indiceActivo = 0;
+
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playTypewriterSound() {
             if (!soundToggle.checked) return;
@@ -382,12 +386,42 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            const savedText = localStorage.getItem('iris_main_content');
-            if (savedText) {
-                editor.value = savedText;
-                onEditorInput();
-            }
+            renderizarCapitulos();
+            cargarCapitulo(0);
         });
+
+        function renderizarCapitulos() {
+            const lista = document.getElementById('chapterList');
+            lista.innerHTML = '';
+            capitulos.forEach((cap, index) => {
+                const li = document.createElement('li');
+                li.textContent = cap.titulo;
+                if (index === indiceActivo) li.classList.add('active');
+                li.onclick = () => seleccionarCapitulo(index);
+                lista.appendChild(li);
+            });
+        }
+
+        function seleccionarCapitulo(index) {
+            guardarEstadoActual();
+            indiceActivo = index;
+            renderizarCapitulos();
+            cargarCapitulo(index);
+        }
+
+        function cargarCapitulo(index) {
+            indiceActivo = index;
+            editor.value = capitulos[index].contenido || "";
+            document.getElementById('currentChapterTitle').textContent = capitulos[index].titulo;
+            onEditorInput();
+        }
+
+        function guardarEstadoActual() {
+            if (capitulos[indiceActivo]) {
+                capitulos[indiceActivo].contenido = editor.value;
+                localStorage.setItem('iris_capitulos_data', JSON.stringify(capitulos));
+            }
+        }
 
         function onEditorInput() {
             playTypewriterSound();
@@ -402,17 +436,30 @@
             const minutes = Math.ceil(words / 200);
             readTime.textContent = `${words === 0 ? 0 : minutes} min`;
 
-            localStorage.setItem('iris_main_content', text);
+            guardarEstadoActual();
         }
 
-        setInterval(() => {
-            const text = editor.value;
-            if (text.trim() !== "") {
-                const timestamp = new Date().toLocaleTimeString();
-                localStorage.setItem(`iris_snapshot_${Date.now()}`, text);
-                backupStatus.textContent = `🛡️ Respaldo guardado (${timestamp})`;
+        function addChapter() {
+            const input = document.getElementById('newChapterInput');
+            const tituloNuevo = input.value.trim();
+            if (tituloNuevo !== "") {
+                guardarEstadoActual();
+                capitulos.push({ titulo: tituloNuevo, contenido: "" });
+                input.value = "";
+                renderizarCapitulos();
+                seleccionarCapitulo(capitulos.length - 1);
             }
-        }, 120000);
+        }
+
+        function addCharacter() {
+            const input = document.getElementById('newCharInput');
+            if (input.value.trim() !== "") {
+                const li = document.createElement('li');
+                li.textContent = input.value.trim();
+                document.getElementById('characterList').appendChild(li);
+                input.value = "";
+            }
+        }
 
         function toggleZenMode() {
             document.body.classList.toggle('zen-mode');
@@ -457,31 +504,6 @@
             } else {
                 const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
                 display.textContent = `Premisa: "${randomPrompt}"`;
-            }
-        }
-
-        function addChapter() {
-            const input = document.getElementById('newChapterInput');
-            if (input.value.trim() !== "") {
-                const li = document.createElement('li');
-                li.textContent = input.value.trim();
-                li.onclick = function() {
-                    document.querySelectorAll('#chapterList li').forEach(el => el.classList.remove('active'));
-                    this.classList.add('active');
-                    document.getElementById('currentChapterTitle').textContent = this.textContent;
-                };
-                document.getElementById('chapterList').appendChild(li);
-                input.value = "";
-            }
-        }
-
-        function addCharacter() {
-            const input = document.getElementById('newCharInput');
-            if (input.value.trim() !== "") {
-                const li = document.createElement('li');
-                li.textContent = input.value.trim();
-                document.getElementById('characterList').appendChild(li);
-                input.value = "";
             }
         }
 
