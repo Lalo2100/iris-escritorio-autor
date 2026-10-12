@@ -10,6 +10,7 @@
             --text-color: #2c2c2c;
             --accent-color: #8c6d46;
             --sidebar-bg: #f4eee1;
+            --border-color: #e0d6c3;
         }
 
         body {
@@ -26,11 +27,12 @@
         aside {
             width: 280px;
             background-color: var(--sidebar-bg);
-            border-right: 1px solid #e0d6c3;
+            border-right: 1px solid var(--border-color);
             padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 20px;
+            box-sizing: border-box;
         }
 
         main {
@@ -40,12 +42,20 @@
             flex-direction: column;
             gap: 20px;
             overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         textarea {
             width: 100%;
             height: 60vh;
-            border: 1px solid #e0d6c3;
+            border: 1px solid var(--border-color);
             background: transparent;
             padding: 20px;
             font-size: 18px;
@@ -54,6 +64,7 @@
             color: inherit;
             resize: none;
             border-radius: 8px;
+            box-sizing: border-box;
         }
 
         textarea:focus {
@@ -63,34 +74,21 @@
 
         .controls-bar {
             display: flex;
-            gap: 15px;
+            justify-content: space-between;
             align-items: center;
-        }
-
-        button {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        button:hover {
-            opacity: 0.9;
         }
 
         /* --- MODO ZEN / ENFOQUE TOTAL --- */
         body.zen-mode aside,
-        body.zen-mode .controls-bar h2 {
+        body.zen-mode .controls-bar h2,
+        body.zen-mode .status-bar {
             display: none !important;
         }
 
         body.zen-mode main {
             max-width: 800px;
             margin: 0 auto;
-            padding: 60px;
+            padding: 60px 20px;
         }
 
         .zen-btn {
@@ -98,11 +96,25 @@
             top: 20px;
             right: 20px;
             z-index: 1000;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: sans-serif;
+            font-size: 13px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .zen-btn:hover {
+            opacity: 0.9;
         }
 
         .status-backup {
             font-size: 12px;
             color: #666;
+            margin-top: auto;
         }
     </style>
 </head>
@@ -120,18 +132,20 @@
         <div>
             <h3>Capítulos</h3>
             <ul>
-                <li>Capítulo 1 (Activo)</li>
+                <li><strong>Capítulo 1</strong> (Activo)</li>
             </ul>
         </div>
-        <div class="status-backup" id="backupStatus">Respaldo local: Al día</div>
+        <div class="status-backup" id="backupStatus">Respaldo local: Sincronizado</div>
     </aside>
 
     <main>
         <div class="controls-bar">
             <h2>Editando: Capítulo 1</h2>
         </div>
-        <textarea id="editor" placeholder="Comienza a escribir tu historia aquí..." oninput="updateEditor()"></textarea>
-        <div>
+        <div class="editor-container">
+            <textarea id="editor" placeholder="Escribe tu historia aquí..." oninput="updateEditor()"></textarea>
+        </div>
+        <div class="status-bar">
             <span id="wordCount">0</span> palabras totales
         </div>
     </main>
@@ -142,7 +156,7 @@
         const progressBar = document.getElementById('progress');
         const backupStatus = document.getElementById('backupStatus');
 
-        // Cargar texto guardado previamente si existe
+        // Cargar texto guardado previamente en el navegador
         if (localStorage.getItem('iris_current_text')) {
             editor.value = localStorage.getItem('iris_current_text');
             updateEditor();
@@ -161,9 +175,11 @@
         // Sistema de respaldo local automático por seguridad (Snapshot cada 2 minutos)
         setInterval(() => {
             const text = editor.value;
-            const timestamp = new Date().toLocaleTimeString();
-            localStorage.setItem(`iris_snapshot_${Date.now()}`, text);
-            backupStatus.textContent = `Respaldo local guardado a las ${timestamp}`;
+            if(text.trim() !== "") {
+                const timestamp = new Date().toLocaleTimeString();
+                localStorage.setItem(`iris_snapshot_${Date.now()}`, text);
+                backupStatus.textContent = `Respaldo guardado a las ${timestamp}`;
+            }
         }, 120000);
 
         // Alternar Modo Zen
